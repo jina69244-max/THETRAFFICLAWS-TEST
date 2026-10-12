@@ -1884,7 +1884,7 @@ async function loadQuestions(){
 
   if(!hasSavedDB){
     try{
-      const res = await fetch("./도로교통법규_문제은행_20260906.json?v=" + Date.now());
+      const res = await fetch("./question.json?v=" + Date.now());
       if(!res.ok) throw new Error('초기 문제 파일을 불러오지 못했습니다: HTTP ' + res.status);
       const data = await res.json();
       if(Array.isArray(data) && data.length){
