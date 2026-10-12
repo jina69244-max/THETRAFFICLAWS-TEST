@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>도로교통법규 기출 모의고사</title>
+<style>
+:root{--pri:#16a34a;--pri-d:#15803d;--bg:#f1f5f9;--card:#fff;--line:#e2e8f0;--ok:#16a34a;--no:#dc2626;--mut:#64748b;--ink:#0f172a;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;}
+.app{max-width:760px;margin:0 auto;min-height:100vh;padding-bottom:80px;}
+header{background:linear-gradient(135deg,#16a34a,#166534);color:#fff;padding:18px 20px;position:sticky;top:0;z-index:50;box-shadow:0 2px 10px rgba(0,0,0,.1);isolation:isolate;}
+header h1{font-size:18px;font-weight:800;}
+header .sub{font-size:12px;opacity:.85;margin-top:2px;}
+.role{position:absolute;right:16px;top:16px;font-size:11px;background:rgba(255,255,255,.2);padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid rgba(255,255,255,.3);z-index:60;color:#fff;}
+.resetbar{background:#fef9c3;border-bottom:1px solid #fde047;padding:8px 16px;font-size:12px;color:#854d0e;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+nav{display:flex;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:62px;z-index:40;overflow-x:auto;}
+nav button{flex:1;min-width:74px;padding:13px 6px;border:none;background:none;font-size:13px;font-weight:600;color:var(--mut);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;}
+nav button.on{color:var(--pri);border-bottom-color:var(--pri);}
+.wrap{padding:16px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.card h3{font-size:15px;margin-bottom:8px;}
+.card.cat{cursor:pointer;transition:.15s;}
+.card.cat:hover{border-color:#93c5fd;box-shadow:0 3px 10px rgba(0,0,0,.08);}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+select,input,textarea{font-family:inherit;font-size:14px;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);}
+select{flex:1;min-width:120px;}
+textarea{width:100%;resize:vertical;line-height:1.5;}
+.btn{background:var(--pri);color:#fff;border:none;padding:11px 18px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;}
+.btn:active{background:var(--pri-d);}
+.btn.sec{background:#e2e8f0;color:#334155;}
+.btn.dang{background:#fee2e2;color:#b91c1c;}
+.btn.ok{background:var(--ok);}
+.btn.sm{padding:7px 12px;font-size:12px;}
+.btn.full{width:100%;}
+.btn.tiny{padding:4px 9px;font-size:11px;}
+.pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:20px;background:#eff6ff;color:#1d4ed8;margin-right:5px;font-weight:600;}
+.pill.g{background:#f0fdf4;color:#15803d;}
+.pill.o{background:#fff7ed;color:#c2410c;}
+.pill.p{background:#faf5ff;color:#7e22ce;}
+.pill.c{background:#ecfeff;color:#0e7490;}
+.pill.x{background:#f1f5f9;color:#64748b;}
+.stars{color:#f59e0b;letter-spacing:1px;}
+.qmeta{font-size:11px;color:var(--mut);margin-bottom:6px;}
+.qtext{font-size:14.5px;font-weight:600;white-space:pre-wrap;margin-bottom:12px;}
+.qimg{max-width:100%;border:1px solid var(--line);border-radius:10px;margin:6px 0 12px;display:block;}
+.choice{display:block;padding:12px 14px;border:1.5px solid var(--line);border-radius:11px;margin-bottom:8px;cursor:pointer;font-size:14px;background:#fff;}
+.choice:hover{border-color:#93c5fd;}
+.choice.sel{border-color:var(--pri);background:#f0fdf4;}
+.exp{background:#f8fafc;border-left:3px solid var(--pri);padding:11px 13px;border-radius:0 8px 8px 0;font-size:13px;margin-top:10px;white-space:pre-wrap;color:#334155;}
+.exp img{max-width:100%;border-radius:8px;margin-top:8px;display:block;border:1px solid var(--line);}
+.review{background:#fffbeb;border:1px dashed #f59e0b;color:#92400e;font-size:12px;padding:9px 12px;border-radius:8px;margin-top:8px;}
+.bar{height:8px;background:#e2e8f0;border-radius:10px;overflow:hidden;margin:6px 0;}
+.bar > i{display:block;height:100%;background:var(--pri);}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.big{font-size:30px;font-weight:800;color:var(--pri);}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.stat-box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center;}
+.stat-box .v{font-size:24px;font-weight:800;color:var(--pri);}
+.stat-box .l{font-size:11px;color:var(--mut);margin-top:2px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:center;}
+th{background:#f8fafc;font-size:12px;color:#475569;}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:100;padding:16px;}
+.modal.on{display:flex;}
+.modal .box{background:#fff;border-radius:16px;padding:20px;max-width:620px;width:100%;max-height:90vh;overflow:auto;}
+.fld{margin-bottom:12px;}
+.fld label{display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:5px;}
+.fld input,.fld textarea,.fld select{width:100%;}
+.muted{color:var(--mut);font-size:13px;}
+.imgbox{border:2px dashed #94a3b8;border-radius:10px;padding:14px;text-align:center;background:#f8fafc;}
+.imgbox img{max-width:100%;max-height:200px;border-radius:8px;margin:0 auto 10px;display:block;}
+.imgbox input[type=file]{display:block;width:100%;margin:6px auto;font-size:13px;}
+.note{font-size:12px;color:var(--mut);background:#f8fafc;padding:10px;border-radius:8px;}
+.code{font-family:monospace;font-size:12px;background:#0f172a;color:#e2e8f0;padding:12px;border-radius:8px;white-space:pre;overflow-x:auto;}
+.progress-top{height:5px;background:#e2e8f0;}
+.progress-top > i{display:block;height:100%;background:var(--ok);transition:.3s;}
+.center{text-align:center;}
+.cnum{display:inline-flex;width:24px;height:24px;border-radius:50%;background:#f1f5f9;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-right:8px;color:#475569;}
+.tags{display:flex;flex-wrap:wrap;gap:4px;}
+.draghandle{cursor:grab;touch-action:none;padding:2px 8px;margin-right:2px;color:var(--mut);font-size:16px;user-select:none;line-height:1;}
+.draghandle:active{cursor:grabbing;}
+.card.cat{user-select:none;}
+.card.cat.dragging{opacity:.55;box-shadow:0 10px 24px rgba(0,0,0,.18);}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <h1>🚦 도로교통법규 기출 모의고사</h1>
+  <div class="sub">도로교통법규 기출문제 모음</div>
+</header>
+<nav id="nav"></nav>
+<div class="wrap" id="view"><div class="card center muted">문제를 불러오는 중입니다…</div></div>
+</div>
+<div class="modal" id="modal"><div class="box" id="modalBox"></div></div>
+
+<script>
+const DATA = [];
+const STAR=n=>'★'.repeat(n)+'☆'.repeat(3-n);
+const $=s=>document.querySelector(s);
+
+// 5개 카테고리 정의
+const CATS=[
+  {id:'1',name:'지역 기출 유사문제',icon:'📍',type:'mc',desc:'지역·연도·난이도를 골라 지역 기출 유사문제를 풉니다.'},
+  {id:'2',name:'전 범위 기출변형 O/X',icon:'⭕',type:'ox',desc:'난이도와 문제 수만 선택하면 O/X 문제가 출제됩니다.'},
+  {id:'3',name:'각 단원별 주관식 단답형 문제',icon:'✍️',type:'short',desc:'Chapter를 하나 고르면 그 챕터의 문제를 전부 풉니다.'},
+  {id:'4',name:'실전모의고사',icon:'📝',type:'mc',desc:'회차(1~10회)를 선택해 실전모의고사를 풉니다.'},
+  {id:'5',name:'23-25 기출문제',icon:'📅',type:'mc',desc:'연도·지역을 골라 2023~2025년 기출문제를 추가된 순서대로 풉니다.'},
+  {id:'6',name:'2027년 기본서 기출 및 예상문제',icon:'📘',type:'mc',desc:'챕터(1~13장)를 선택해 2027년 기본서 기출 및 예상문제를 풉니다.'}
+];
+
+// ===== 목차(학습유형) 공개/비공개 및 표시 순서: 문제 파일(traffic_question.json)의 설정을 따른다 =====
+let CAT_VIS = {};
+function isCatVisible(id){ return CAT_VIS[String(id)] !== false; }
+let CAT_ORDER = [];
+function saveCatOrder(){}
+function getOrderedCats(){
+  const ids = CATS.map(c=>c.id);
+  let order = CAT_ORDER.filter(id=>ids.includes(id));
+  ids.forEach(id=>{ if(!order.includes(id)) order.push(id); });
+  return order.map(id=>CATS.find(c=>c.id===id));
+}
+
+// ===== 영구 저장소(IndexedDB) =====
+// 문제 데이터(DB)는 이미지가 쌓이면 용량이 커져서, localStorage(브라우저마다 대략 5~10MB 한도)에
+// 저장할 경우 한도를 넘는 순간 저장이 "조용히" 실패해 다음 접속 때 새로 추가한 문제가 사라지는
+// 문제가 있었다. 이를 막기 위해 문제 데이터는 한도가 훨씬 큰 IndexedDB에 저장하도록 변경한다.
+const IDB_NAME='traffic_quiz_store', IDB_STORE='kv';
+let _idbPromise=null;
+function idbOpen(){
+  if(_idbPromise) return _idbPromise;
+  _idbPromise = new Promise((resolve,reject)=>{
+    if(!window.indexedDB){reject(new Error('indexedDB 미지원 브라우저'));return;}
+    const req = indexedDB.open(IDB_NAME,1);
+    req.onupgradeneeded = ()=>{ if(!req.result.objectStoreNames.contains(IDB_STORE)) req.result.createObjectStore(IDB_STORE); };
+    req.onsuccess = ()=>resolve(req.result);
+    req.onerror = ()=>reject(req.error);
+  });
+  return _idbPromise;
+}
+function idbGet(key){
+  return idbOpen().then(db=>new Promise((resolve,reject)=>{
+    const req = db.transaction(IDB_STORE,'readonly').objectStore(IDB_STORE).get(key);
+    req.onsuccess = ()=>resolve(req.result);
+    req.onerror = ()=>reject(req.error);
+  }));
+}
+function idbSet(key,val){
+  return idbOpen().then(db=>new Promise((resolve,reject)=>{
+    const req = db.transaction(IDB_STORE,'readwrite').objectStore(IDB_STORE).put(val,key);
+    req.onsuccess = ()=>resolve(true);
+    req.onerror = ()=>reject(req.error);
+  }));
+}
+function idbDel(key){
+  return idbOpen().then(db=>new Promise((resolve,reject)=>{
+    const req = db.transaction(IDB_STORE,'readwrite').objectStore(IDB_STORE).delete(key);
+    req.onsuccess = ()=>resolve(true);
+    req.onerror = ()=>reject(req.error);
+  }));
+}
+
+let DB = [];               // 실제 값은 loadQuestions()에서 채워짐 (IndexedDB → 구버전 localStorage → 초기 파일 순으로 확인)
+const ROLE = 'user';
+let HIST = JSON.parse(localStorage.getItem('hist_traffic_v1')||'[]');
+function saveDB(){ return Promise.resolve(); }   // 수험생용: 문제는 파일에서만 읽고 저장하지 않음
+function saveHist(){
+  try{ localStorage.setItem('hist_traffic_v1',JSON.stringify(HIST)); }
+  catch(e){ console.error('이력 저장 실패:', e); }
+}
+
+// Chapter 1~13 고정 목록/제목 (주관식 단답형=카테고리3, 2027년 기본서 기출 및 예상문제=카테고리6 공용)
+const CHAPTER_TITLES={
+  '1':'총칙',
+  '2':'보행자의 통행방법',
+  '3':'차마 및 노면전차의 통행방법 등',
+  '4':'운전자 및 고용주 등의 의무',
+  '5':'고속도로 및 자동차전용도로에서의 특례',
+  '6':'도로의 사용',
+  '7':'교통안전교육',
+  '8':'운전면허',
+  '9':'국제운전면허증',
+  '10':'운전면허의 행정처분',
+  '11':'보칙',
+  '12':'벌칙',
+  '13':'범칙행위의 처리에 관한 특례'
+};
+function chapterLabel(n){return CHAPTER_TITLES[String(n)]||'';}
+function chapterFullLabel(n){return `Chapter.${n} [ ${chapterLabel(n)} ]`;}
+// 카테고리6(2027년 기본서 기출 및 예상문제)용 챕터 타이틀 표기: "Chapter 01. 총칙" 형식
+function chapterTitleFmt(n){return `Chapter ${padNum(n)}. ${chapterLabel(n)}`;}
+// 카테고리3(주관식) 문제가 해당 챕터 안에서 몇 번째로 추가되었는지(문제01, 문제02...) 계산.
+// "문제 NN" 라벨 값이 아니라 실제 추가된 순서(id 오름차순)를 기준으로 한다.
+function chapterQNumber(q){
+  if(!q||q.category!=='3'||!q.chapter)return null;
+  const list=DB.filter(x=>x.category==='3'&&String(x.chapter)===String(q.chapter)).sort((a,b)=>a.id-b.id);
+  const idx=list.findIndex(x=>x.id===q.id);
+  return idx>=0?idx+1:null;
+}
+function padNum(n){return String(n).padStart(2,'0');}
+// 카테고리4(실전모의고사) 문제가 해당 회차 안에서 몇 번째로 추가되었는지("문제 01, 02...") 계산.
+// 카테고리3의 chapterQNumber와 동일한 방식(실제 추가 순서=id 오름차순 기준).
+function roundQNumber(q){
+  if(!q||q.category!=='4'||!q.round)return null;
+  const list=DB.filter(x=>x.category==='4'&&String(x.round)===String(q.round)).sort((a,b)=>a.id-b.id);
+  const idx=list.findIndex(x=>x.id===q.id);
+  return idx>=0?idx+1:null;
+}
+// 카테고리6(2027년 기본서 기출 및 예상문제) 문제가 해당 챕터 안에서 몇 번째로 추가되었는지 계산.
+// roundQNumber/chapterQNumber와 동일한 방식(실제 추가 순서=id 오름차순 기준).
+function cat6QNumber(q){
+  if(!q||q.category!=='6'||!q.chapter)return null;
+  const list=DB.filter(x=>x.category==='6'&&String(x.chapter)===String(q.chapter)).sort((a,b)=>a.id-b.id);
+  const idx=list.findIndex(x=>x.id===q.id);
+  return idx>=0?idx+1:null;
+}
+// 카테고리5(23-25 기출문제) 문제 번호: 같은 "출제년도+출제지역" 조합(=하나의 기출문제 회차)
+// 안에서 추가된 순서(id 오름차순) 기준으로 매번 1번부터 새로 매긴다. 연도·지역이 다르면 다른 회차로 취급.
+function cat5GroupKey(q){return (q.year||'')+'||'+(q.region||'');}
+function cat5QNumber(q){
+  if(!q||q.category!=='5')return null;
+  const key=cat5GroupKey(q);
+  const list=DB.filter(x=>x.category==='5'&&cat5GroupKey(x)===key).sort((a,b)=>a.id-b.id);
+  const idx=list.findIndex(x=>x.id===q.id);
+  return idx>=0?idx+1:null;
+}
+
+// 기존에 저장된 문제(카테고리 정보가 없는 문제)는 모두 "1. 지역 기출 유사문제"로 편입
+function migrateDB(){
+  let changed=false;
+  DB.forEach(q=>{
+    if(!q.category){q.category='1';changed=true;}
+    if(!q.type){q.type = q.category==='2'?'ox' : q.category==='3'?'short' : 'mc';changed=true;}
+    if(q.type==='mc'&&!q.choices)q.choices=['','','',''];
+    // 실전모의고사(카테고리4): 회차/출제지수/출제난도/출제파트 필드 보정 (구버전 지역·연도 데이터에서 이관)
+    if(q.category==='4'){
+      if(!q.round){q.round='1';changed=true;}
+      if(q.exIndex==null){q.exIndex=q.freq||2;changed=true;}
+      if(q.exDiff==null){q.exDiff=q.freq||2;changed=true;}
+      if(q.part==null){q.part='';changed=true;}
+    }
+    // 2027년 기본서 기출 및 예상문제(카테고리6): 챕터 필드만 보정 (출제지수/출제난도/출제파트는 더 이상 사용하지 않음)
+    if(q.category==='6'){
+      if(!q.chapter){q.chapter='1';changed=true;}
+    }
+  });
+  if(changed)saveDB();
+}
+// 참고: DB는 이제 loadQuestions()에서 비동기로 채워지므로, migrateDB()도 그 안에서 호출한다.
+
+function closeM(){
+  const m = $('#modal');
+  if(m) m.classList.remove('on');
+}
+
+function normalizeRegion(s){return (s||'').replace(/교육청\s*유사\s*[ⅠⅡⅢⅣⅤ0-9]*/g,'교육청');}
+function splitRegions(s){return normalizeRegion(s).split(/[·,\/]|및|\s+/).map(x=>x.trim()).filter(Boolean);}
+function splitYears(s){return (String(s||'').match(/20\d{2}/g)||[]);}
+function regionOpts(cat){const set=new Set();DB.forEach(q=>{if(cat&&q.category!==cat)return;splitRegions(q.region).forEach(r=>set.add(r));});return [...set].sort();}
+function yearOpts(cat){const set=new Set();DB.forEach(q=>{if(cat&&q.category!==cat)return;splitYears(q.year).forEach(y=>set.add(y));});return [...set].sort();}
+
+
+function peers(setKey){let seed=0;for(const c of setKey)seed=(seed*31+c.charCodeAt(0))%99991;
+  const rnd=()=>{seed=(seed*1103515245+12345)%2147483648;return seed/2147483648;};
+  const cnt=18+Math.floor(rnd()*40);const arr=[];
+  for(let i=0;i<cnt;i++)arr.push(Math.min(100,Math.round(45+rnd()*52)));return arr;}
+
+let TAB='exam';
+const tabsUser=[['exam','시험응시'],['stats','통계'],['hist','이력']];
+function renderNav(){
+  $('#nav').innerHTML=tabsUser.map(t=>`<button class="${TAB===t[0]?'on':''}" onclick="go('${t[0]}')">${t[1]}</button>`).join('');}
+function go(t){TAB=t;if(t==='exam'&&!exam)examCat=null;renderNav();render();}
+// ===== 시험응시: 첫 화면(카테고리 목록) + 카테고리별 시험 =====
+let examCat=null;
+let cfg={freq:'',region:'',year:'',count:'10'};
+let exam=null;
+
+function render(){
+  if(TAB==='exam'){
+    if(exam)return renderRunning();
+    if(!examCat)return renderCatList();
+    if(examCat==='2')return renderOXSetup();
+    if(examCat==='3')return renderShortChapterList();
+    if(examCat==='4')return renderRoundList();
+    if(examCat==='5')return renderExamSetup5();
+    if(examCat==='6')return renderCat6ChapterList();
+    return renderExamSetup();
+  }
+  else if(TAB==='stats')renderStats();
+  else if(TAB==='hist')renderHist();}
+
+function renderCatList(){
+  const isAdmin = false;
+  const ordered = getOrderedCats();
+  // 일반 사용자(수험생)에게는 공개 설정된 목차만 노출한다. 관리자는 공개/비공개 전환 + 순서 변경을 위해 전체를 본다.
+  const list = isAdmin ? ordered : ordered.filter(c=>isCatVisible(c.id));
+  if(!list.length){
+    $('#view').innerHTML = '<div class="card center muted">현재 공개된 학습 유형이 없습니다.</div>';
+    return;
+  }
+  $('#view').innerHTML =
+    `<div class="note" style="margin-bottom:12px">📚 원하는 학습 유형을 선택하세요.${isAdmin?'<br>🔧 관리자 모드: 배지를 눌러 공개 여부를, ☰를 눌러 드래그하면 순서를 바꿀 수 있어요. (비공개로 해도 안의 문제는 그대로 보관됩니다)':''}</div>` +
+    list.map(c=>{
+      const cnt=DB.filter(q=>q.category===c.id).length;
+      const vis=isCatVisible(c.id);
+      const badge = isAdmin
+        ? `<span class="pill ${vis?'g':'x'}" style="cursor:pointer;white-space:nowrap" onclick="event.stopPropagation();toggleCatVis('${c.id}')">${vis?'🌐 공개중':'🔒 비공개'}</span>`
+        : '';
+      const handle = isAdmin
+        ? `<span class="draghandle" title="드래그해서 순서 변경" onclick="event.stopPropagation()">☰</span>`
+        : '';
+      return `<div class="card cat" data-cat-id="${c.id}" onclick="selectCat('${c.id}')"${(isAdmin&&!vis)?' style="opacity:.6"':''}>
+        <div class="row">${handle}<h3 style="flex:1">${c.icon} ${c.name}</h3><span class="muted">${cnt}문항</span></div>
+        <div class="row" style="margin-top:6px;align-items:flex-start;gap:8px">
+          <div class="muted" style="font-size:13px;flex:1">${c.desc}</div>${badge}
+        </div>
+      </div>`;
+    }).join('');
+}
+
+function selectCat(id){examCat=id;cfg={freq:'',region:'',year:'',count:'10'};render();}
+
+// ---- 1 / 4 / 5 : 기존 형식(난이도·지역·연도 + 개수) ----
+function filtered(){return DB.filter(q=>q.category===examCat&&
+  (!cfg.freq||q.freq==+cfg.freq)&&
+  (!cfg.region||!q.region||splitRegions(q.region).includes(cfg.region))&&
+  (!cfg.year||!q.year||splitYears(q.year).includes(cfg.year)));}
+
+function renderExamSetup(){const catInfo=CATS.find(c=>c.id===examCat);const regs=regionOpts(examCat);const yrs=yearOpts(examCat);
+  $('#view').innerHTML=`
+  <div class="card">
+    <button class="btn sm sec" onclick="examCat=null;render()">◀ 목록으로</button>
+    <h3 style="margin-top:10px">📝 ${catInfo.icon} ${catInfo.name} - 범위 설정</h3>
+    <p class="muted" style="margin:8px 0 12px">난이도·지역·연도별로 문제를 골라 모의고사를 구성합니다.</p>
+    <div class="filters">
+      <select id="f_freq"><option value="">난이도 전체</option><option value="3" ${cfg.freq=='3'?'selected':''}>★★★ 상</option><option value="2" ${cfg.freq=='2'?'selected':''}>★★☆ 중</option><option value="1" ${cfg.freq=='1'?'selected':''}>★☆☆ 하</option></select>
+      <select id="f_region"><option value="">지역 전체</option>${regs.map(v=>`<option ${cfg.region===v?'selected':''}>${v}</option>`).join('')}</select>
+      <select id="f_year"><option value="">연도 전체</option>${yrs.map(v=>`<option ${cfg.year===v?'selected':''}>${v}</option>`).join('')}</select></div>
+    <div class="filters"><select id="f_count"><option value="5">5문항</option><option value="10" selected>10문항</option><option value="20">20문항</option><option value="999">전체</option></select></div>
+    <div class="row" style="margin-top:6px"><span class="muted">해당 조건 문제: <b id="cnt">0</b>개</span><button class="btn" onclick="startExam()">시험 시작 ▶</button></div>
+  </div>
+  <div class="note">💡 묶인 지역·연도는 각각 분리되어, 어느 항목을 골라도 해당 문제가 출제됩니다. 지역·연도를 입력하지 않은 문제는 어떤 지역·연도를 선택해도 공통으로 출제됩니다.</div>`;
+  ['freq','region','year','count'].forEach(k=>{$('#f_'+k).onchange=e=>{
+    cfg[k]=e.target.value;
+    updateCnt();
+  };});updateCnt();}
+function updateCnt(){const el=$('#cnt');if(el)el.textContent=filtered().length;}
+function startExam(){let pool=filtered();if(!pool.length){alert('조건에 맞는 문제가 없습니다.');return;}
+  const cnt=cfg.count==='999'?pool.length:Math.min(+cfg.count,pool.length);
+  pool=[...pool].sort(()=>Math.random()-.5).slice(0,cnt);
+  exam={type:'mc',cat:examCat,qs:pool,i:0,ans:{},start:Date.now()};render();}
+
+// ---- 5 : 23-25 기출문제 (연도·지역만 선택, 난이도·문항수 선택 없음 / 추가한 순서대로 출제) ----
+function filtered5(){return DB.filter(q=>q.category==='5'&&
+  (!cfg.region||!q.region||splitRegions(q.region).includes(cfg.region))&&
+  (!cfg.year||!q.year||splitYears(q.year).includes(cfg.year)));}
+function regionOptsForYear(year){
+  const set=new Set();
+  DB.forEach(q=>{
+    if(q.category!=='5')return;
+    if(year&&q.year&&!splitYears(q.year).includes(year))return;
+    splitRegions(q.region).forEach(r=>set.add(r));
+  });
+  return [...set].sort();
+}
+function renderExamSetup5(){const catInfo=CATS.find(c=>c.id==='5');const yrs=yearOpts('5');
+  if(cfg.year&&cfg.region&&!regionOptsForYear(cfg.year).includes(cfg.region))cfg.region='';
+  const regs=regionOptsForYear(cfg.year);
+  $('#view').innerHTML=`
+  <div class="card">
+    <button class="btn sm sec" onclick="examCat=null;render()">◀ 목록으로</button>
+    <h3 style="margin-top:10px">📝 ${catInfo.icon} ${catInfo.name} - 범위 설정</h3>
+    <p class="muted" style="margin:8px 0 12px">연도·지역별로 문제를 골라 풉니다. 문제는 추가한 순서대로(랜덤 아님) 출제되며, 문제 번호가 항상 표시됩니다.</p>
+    <div class="filters">
+      <select id="f_year"><option value="">연도 전체</option>${yrs.map(v=>`<option ${cfg.year===v?'selected':''}>${v}</option>`).join('')}</select>
+      <select id="f_region"><option value="">지역 전체</option>${regs.map(v=>`<option ${cfg.region===v?'selected':''}>${v}</option>`).join('')}</select></div>
+    <div class="row" style="margin-top:6px"><span class="muted">해당 조건 문제: <b id="cnt">0</b>개</span><button class="btn" onclick="startExam5()">시험 시작 ▶</button></div>
+  </div>
+  <div class="note">💡 연도를 먼저 선택하면 지역 목록이 해당 연도에 출제된 지역으로만 좁혀집니다. 묶인 지역·연도는 각각 분리되어, 어느 항목을 골라도 해당 문제가 출제됩니다. 지역·연도를 입력하지 않은 문제는 어떤 지역·연도를 선택해도 공통으로 출제됩니다.</div>`;
+  $('#f_year').onchange=e=>{cfg.year=e.target.value;renderExamSetup5();};
+  $('#f_region').onchange=e=>{cfg.region=e.target.value;updateCnt5();};
+  updateCnt5();}
+function updateCnt5(){const el=$('#cnt');if(el)el.textContent=filtered5().length;}
+function startExam5(){let pool=filtered5();if(!pool.length){alert('조건에 맞는 문제가 없습니다.');return;}
+  pool=[...pool].sort((a,b)=>a.id-b.id); // 랜덤 셔플 없이, 추가한 순서(id 오름차순) 그대로 출제
+  exam={type:'mc',cat:'5',qs:pool,i:0,ans:{},start:Date.now()};render();}
+
+// ---- 2 : O/X (난이도 + 개수만 선택) ----
+function renderOXSetup(){
+  $('#view').innerHTML=`
+  <div class="card">
+    <button class="btn sm sec" onclick="examCat=null;render()">◀ 목록으로</button>
+    <h3 style="margin-top:10px">⭕ 전 범위 기출변형 O/X</h3>
+    <p class="muted" style="margin:8px 0 12px">난이도와 문제 수만 선택하면 전 범위에서 O/X 문제가 출제됩니다.</p>
+    <div class="filters">
+      <select id="f_freq"><option value="">난이도 전체</option><option value="3">★★★ 상</option><option value="2">★★☆ 중</option><option value="1">★☆☆ 하</option></select>
+      <select id="f_count"><option value="5">5문항</option><option value="10" selected>10문항</option><option value="20">20문항</option><option value="999">전체</option></select></div>
+    <div class="row" style="margin-top:6px"><span class="muted">해당 조건 문제: <b id="cnt">0</b>개</span><button class="btn" onclick="startOXExam()">시험 시작 ▶</button></div>
+  </div>`;
+  const oxCnt=()=>DB.filter(q=>q.category==='2'&&(!cfg.freq||q.freq==+cfg.freq)).length;
+  ['freq','count'].forEach(k=>{$('#f_'+k).onchange=e=>{cfg[k]=e.target.value;$('#cnt').textContent=oxCnt();};});
+  $('#cnt').textContent=oxCnt();
+}
+function startOXExam(){
+  let pool=DB.filter(q=>q.category==='2'&&(!cfg.freq||q.freq==+cfg.freq));
+  if(!pool.length){alert('조건에 맞는 문제가 없습니다. (문제관리/문제추가에서 O/X 문제를 먼저 등록해주세요)');return;}
+  const cnt=cfg.count==='999'?pool.length:Math.min(+cfg.count,pool.length);
+  pool=[...pool].sort(()=>Math.random()-.5).slice(0,cnt);
+  exam={type:'ox',cat:'2',qs:pool,i:0,ans:{},start:Date.now()};render();
+}
+
+// ---- 3 : 주관식 단답형 (Chapter 1~13 중 선택 → 개수 선택 → 랜덤 출제) ----
+function renderShortChapterList(){
+  const chapters=Array.from({length:13},(_,i)=>String(i+1));
+  $('#view').innerHTML=`<div class="card">
+    <button class="btn sm sec" onclick="examCat=null;render()">◀ 목록으로</button>
+    <h3 style="margin-top:10px">✍️ 각 단원별 주관식 단답형 문제</h3>
+    <p class="muted" style="margin:8px 0 12px">챕터를 선택하면 그 챕터의 문제를 모두 풉니다.</p>
+  </div>` + chapters.map(n=>{
+    const cnt=DB.filter(q=>q.category==='3'&&String(q.chapter)===n).length;
+    return `<div class="card cat" onclick="startShortChapterExam('${n}')">
+      <div class="row"><h3>${esc(chapterFullLabel(n))}</h3><span class="muted">${cnt}문항</span></div>
+    </div>`;
+  }).join('');
+}
+function startShortChapterExam(n){
+  const pool=DB.filter(q=>q.category==='3'&&String(q.chapter)===n);
+  if(!pool.length){alert('이 챕터에 등록된 문제가 없습니다. (문제관리/문제추가에서 먼저 등록해주세요)');return;}
+  const shuffled=[...pool].sort(()=>Math.random()-.5);
+  exam={type:'short',cat:'3',qs:shuffled,i:0,ans:{},start:Date.now()};render();
+}
+
+// ---- 4 : 실전모의고사 (회차 1~10 중 선택 → 해당 회차 문제를 순서대로 응시) ----
+function renderRoundList(){
+  const rounds=Array.from({length:10},(_,i)=>String(i+1));
+  $('#view').innerHTML=`<div class="card">
+    <button class="btn sm sec" onclick="examCat=null;render()">◀ 목록으로</button>
+    <h3 style="margin-top:10px">📝 실전모의고사 - 회차 선택</h3>
+    <p class="muted" style="margin:8px 0 12px">원하는 회차를 선택하면 그 회차의 문제를 모두 풉니다. (10회차까지 있음)</p>
+  </div>` + rounds.map(n=>{
+    const cnt=DB.filter(q=>q.category==='4'&&String(q.round)===n).length;
+    return `<div class="card cat" onclick="startRoundExam('${n}')">
+      <div class="row"><h3>제${n}회 도로교통법규 실전모의고사</h3><span class="muted">${cnt}문항</span></div>
+    </div>`;
+  }).join('');
+}
+function startRoundExam(n){
+  const pool=DB.filter(q=>q.category==='4'&&String(q.round)===n).sort((a,b)=>a.id-b.id);
+  if(!pool.length){alert('이 회차에 등록된 문제가 없습니다. (문제관리/문제추가에서 먼저 등록해주세요)');return;}
+  exam={type:'mc',cat:'4',qs:pool,i:0,ans:{},start:Date.now()};render();
+}
+
+// ---- 6 : 2027년 기본서 기출 및 예상문제 (Chapter 1~13 중 선택 → 해당 챕터 문제를 순서대로 응시) ----
+// 형식은 카테고리4(실전모의고사)와 동일하며, 회차 대신 Chapter 1~13으로 구분한다.
+function renderCat6ChapterList(){
+  const chapters=Array.from({length:13},(_,i)=>String(i+1));
+  $('#view').innerHTML=`<div class="card">
+    <button class="btn sm sec" onclick="examCat=null;render()">◀ 목록으로</button>
+    <h3 style="margin-top:10px">📘 2027년 기본서 기출 및 예상문제 - 챕터 선택</h3>
+    <p class="muted" style="margin:8px 0 12px">원하는 챕터를 선택하면 그 챕터의 문제를 모두 풉니다. (Chapter 01~13)</p>
+  </div>` + chapters.map(n=>{
+    const cnt=DB.filter(q=>q.category==='6'&&String(q.chapter)===n).length;
+    return `<div class="card cat" onclick="startCat6Exam('${n}')">
+      <div class="row"><h3>${esc(chapterTitleFmt(n))}</h3><span class="muted">${cnt}문항</span></div>
+    </div>`;
+  }).join('');
+}
+function startCat6Exam(n){
+  const pool=DB.filter(q=>q.category==='6'&&String(q.chapter)===n).sort((a,b)=>a.id-b.id);
+  if(!pool.length){alert('이 챕터에 등록된 문제가 없습니다. (문제관리/문제추가에서 먼저 등록해주세요)');return;}
+  exam={type:'mc',cat:'6',qs:pool,i:0,ans:{},start:Date.now()};render();
+}
+
+// ---- 응시 화면 ----
+function renderRunning(){
+  if(exam.type==='ox')return renderRunningOX();
+  if(exam.type==='short')return renderRunningShort();
+  return renderRunningMC();
+}
+function renderRunningMC(){const {qs,i}=exam;const q=qs[i];
+  const isRound=q.category==='4';
+  const isCat5=q.category==='5';
+  const isCat6=q.category==='6';
+  const starsHtml=isRound?`<span class="stars" title="출제지수">${STAR(q.exIndex)}</span> <span class="stars" title="출제난도">${STAR(q.exDiff)}</span>`:((isCat5||isCat6)?'':`<span class="stars">${STAR(q.freq)}</span>`);
+  const metaHtml=isRound
+    ?`<div class="qmeta tags"><span class="pill o">제${esc(q.round)}회 모의고사</span><span class="pill c">문제 ${padNum(roundQNumber(q)||(i+1))}</span>${q.part?`<span class="pill p">${esc(q.part)}</span>`:''}</div>`
+    :isCat6
+      ?`<div class="qmeta tags"><span class="pill o">${esc(chapterTitleFmt(q.chapter))}</span></div>`
+    :isCat5
+      ?`<div class="qmeta tags">${splitYears(q.year).map(y=>`<span class="pill p">${y}</span>`).join('')}${splitRegions(q.region).map(r=>`<span class="pill o">${esc(r)}</span>`).join('')}${q.direct?`<span class="pill g">직접 응시</span>`:''}</div>`
+      :`<div class="qmeta"><span class="pill o">${normalizeRegion(q.region)}</span><span class="pill p">${q.year}</span></div>`;
+  const cat5QPrefix=isCat5?`문제 ${cat5QNumber(q)||(i+1)}번. `:'';
+  const cat6QPrefix=isCat6?`문제 ${cat6QNumber(q)||(i+1)}번. `:'';
+  $('#view').innerHTML=`
+  <div class="progress-top"><i style="width:${(i+1)/qs.length*100}%"></i></div>
+  <div class="card">
+    <div class="row" style="margin-bottom:10px"><span class="muted">문제 ${i+1} / ${qs.length}</span>${starsHtml}</div>
+    ${metaHtml}
+    <div class="qtext">${cat5QPrefix}${cat6QPrefix}${esc(q.q)}</div>
+    ${q.qimg?`<img class="qimg" src="${q.qimg}">`:''}
+    <div>${q.choices.map((c,k)=>`<label class="choice ${exam.ans[q.id]===k+1?'sel':''}" onclick="pick(${q.id},${k+1})"><span class="cnum">${k+1}</span>${esc(c)}</label>`).join('')}</div>
+  </div>
+  <div class="row">
+    <button class="btn sec" ${i===0?'disabled':''} onclick="navQ(-1)">◀ 이전</button>
+    ${i<qs.length-1?`<button class="btn" onclick="navQ(1)">다음 ▶</button>`:`<button class="btn ok" onclick="submitExam()">제출하기 ✓</button>`}
+  </div>
+  <div style="margin-top:10px" class="center"><button class="btn sm sec" onclick="if(confirm('시험을 중단하시겠습니까?')){exam=null;render();}">중단</button></div>`;}
+
+function renderRunningOX(){const {qs,i}=exam;const q=qs[i];
+  $('#view').innerHTML=`
+  <div class="progress-top"><i style="width:${(i+1)/qs.length*100}%"></i></div>
+  <div class="card">
+    <div class="row" style="margin-bottom:10px"><span class="muted">문제 ${i+1} / ${qs.length}</span><span class="stars">${STAR(q.freq)}</span></div>
+    <div class="qtext">${esc(q.q)}</div>
+    ${q.qimg?`<img class="qimg" src="${q.qimg}">`:''}
+    <div class="row" style="gap:10px">
+      <label class="choice ${exam.ans[q.id]===1?'sel':''}" style="flex:1;text-align:center;font-weight:700;font-size:18px" onclick="pick(${q.id},1)">⭕</label>
+      <label class="choice ${exam.ans[q.id]===2?'sel':''}" style="flex:1;text-align:center;font-weight:700;font-size:18px" onclick="pick(${q.id},2)">❌</label>
+    </div>
+  </div>
+  <div class="row">
+    <button class="btn sec" ${i===0?'disabled':''} onclick="navQ(-1)">◀ 이전</button>
+    ${i<qs.length-1?`<button class="btn" onclick="navQ(1)">다음 ▶</button>`:`<button class="btn ok" onclick="submitExam()">제출하기 ✓</button>`}
+  </div>
+  <div style="margin-top:10px" class="center"><button class="btn sm sec" onclick="if(confirm('시험을 중단하시겠습니까?')){exam=null;render();}">중단</button></div>`;}
+
+function renderRunningShort(){const {qs,i}=exam;const q=qs[i];
+  const ansArr=toAnswerArray(q.answer);
+  const myArr=Array.isArray(exam.ans[q.id])?exam.ans[q.id]:[];
+  const boxesHtml = ansArr.length>1
+    ? ansArr.map((_,k)=>`<div class="row" style="gap:8px;margin-top:8px;align-items:center">
+        <span style="font-weight:700;min-width:20px">${ansMark(k)}</span>
+        <input value="${attr(myArr[k]||'')}" oninput="setShortAns(${q.id},${k},this.value,${ansArr.length})" style="flex:1">
+      </div>`).join('')
+    : `<input placeholder="답을 입력하세요" value="${attr(myArr[0]||'')}" oninput="setShortAns(${q.id},0,this.value,1)" style="width:100%;margin-top:6px">`;
+  const qNum=chapterQNumber(q);
+  const qPrefix=qNum!=null?padNum(qNum)+'. ':'';
+  $('#view').innerHTML=`
+  <div class="progress-top"><i style="width:${(i+1)/qs.length*100}%"></i></div>
+  <div class="card">
+    <div class="row" style="margin-bottom:10px"><span class="muted">문제 ${i+1} / ${qs.length}</span></div>
+    ${q.chapter?`<div class="qmeta"><span class="pill o">${esc(chapterFullLabel(q.chapter))}</span></div>`:''}
+    <div class="qtext">${qPrefix}${esc(q.q)}</div>
+    ${q.qimg?`<img class="qimg" src="${q.qimg}">`:''}
+    ${boxesHtml}
+  </div>
+  <div class="row">
+    <button class="btn sec" ${i===0?'disabled':''} onclick="navQ(-1)">◀ 이전</button>
+    ${i<qs.length-1?`<button class="btn" onclick="navQ(1)">다음 ▶</button>`:`<button class="btn ok" onclick="submitExam()">제출하기 ✓</button>`}
+  </div>
+  <div style="margin-top:10px" class="center"><button class="btn sm sec" onclick="if(confirm('시험을 중단하시겠습니까?')){exam=null;render();}">중단</button></div>`;}
+function setShortAns(id,k,val,len){
+  if(!Array.isArray(exam.ans[id])||exam.ans[id].length!==len)exam.ans[id]=new Array(len).fill('');
+  exam.ans[id][k]=val;
+}
+
+function pick(id,k){exam.ans[id]=k;renderRunning();}
+function navQ(d){exam.i+=d;render();}
+
+function ansMark(i){return String.fromCodePoint(0x24D0+i);} // ⓐ,ⓑ,ⓒ...
+function toAnswerArray(ans){
+  if(Array.isArray(ans))return ans.length?ans:[''];
+  if(ans==null||ans==='')return [''];
+  return [String(ans)];
+}
+function normText(s){return String(s==null?'':s).trim().replace(/\s+/g,'').toLowerCase();}
+// "A 또는 B 또는 C" 형태로 적은 정답칸은 셋 중 어떤 걸 써도 정답으로 인정
+function splitAlternatives(s){
+  const parts=String(s||'').split(/\s*또는\s*/).map(x=>x.trim()).filter(x=>x.length>0);
+  return parts.length?parts:[String(s||'')];
+}
+function isCorrect(q,my,type){
+  if(type==='short'){
+    const ansArr=toAnswerArray(q.answer);
+    const myArr=Array.isArray(my)?my:(my==null?[]:[my]);
+    for(let k=0;k<ansArr.length;k++){
+      const alts=splitAlternatives(ansArr[k]);
+      if(!alts.some(a=>normText(a)===normText(myArr[k])))return false;
+    }
+    return true;
+  }
+  return my===q.answer;
+}
+
+function submitExam(){const {qs,ans,type}=exam;let correct=0;
+  qs.forEach(q=>{if(isCorrect(q,ans[q.id],type))correct++;});
+  const score=Math.round(correct/qs.length*100);const sec=Math.round((Date.now()-exam.start)/1000);
+  const setKey=qs.map(q=>q.id).join('-');
+  const rec={date:new Date().toLocaleString('ko-KR'),score,correct,total:qs.length,sec,setKey,type,
+    detail:qs.map(q=>({id:q.id,my:ans[q.id],ok:q.answer,correct:isCorrect(q,ans[q.id],type)}))};
+  HIST.unshift(rec);saveHist();renderResult(rec,qs,type);}
+
+function renderResult(rec,qs,type){type=type||rec.type||'mc';
+  const pr=peers(rec.setKey).concat([rec.score]).sort((a,b)=>b-a);
+  const avg=Math.round(pr.reduce((a,b)=>a+b,0)/pr.length);const rank=pr.indexOf(rec.score)+1;
+  $('#view').innerHTML=`
+  <div class="card center"><div class="muted">획득 점수</div><div class="big" style="font-size:46px">${rec.score}점</div>
+    <div class="muted">${rec.correct} / ${rec.total} 정답 · 소요 ${Math.floor(rec.sec/60)}분 ${rec.sec%60}초</div></div>
+  <div class="stat-grid">
+    <div class="stat-box"><div class="v">${pr.length}명</div><div class="l">응시 인원</div></div>
+    <div class="stat-box"><div class="v">${avg}점</div><div class="l">평균 점수</div></div>
+    <div class="stat-box"><div class="v">${rank}위</div><div class="l">나의 순위</div></div>
+    <div class="stat-box"><div class="v">상위 ${Math.round(rank/pr.length*100)}%</div><div class="l">백분위</div></div></div>
+  <div class="card"><h3>📋 문항별 결과</h3>
+    ${qs.map((q,n)=>{const d=rec.detail.find(x=>x.id===q.id);
+      let myLabel,okLabel;
+      if(type==='ox'){myLabel=d.my===1?'⭕':d.my===2?'❌':'-';okLabel=q.answer===1?'⭕':'❌';}
+      else if(type==='short'){
+        const ansArr=toAnswerArray(q.answer);
+        const myArr=Array.isArray(d.my)?d.my:(d.my==null?[]:[d.my]);
+        myLabel=ansArr.length>1?ansArr.map((_,k)=>ansMark(k)+' '+esc(myArr[k]||'-')).join(', '):esc(myArr[0]||'-');
+        // 오답일 때만 정답을 공개하며, "A 또는 B" 처럼 중복 정답이 있으면 첫번째 답만 표시
+        const firstAlts=ansArr.map(a=>splitAlternatives(a)[0]);
+        okLabel=ansArr.length>1?firstAlts.map((a,k)=>ansMark(k)+' '+esc(a)).join(', '):esc(firstAlts[0]);
+      }
+      else{myLabel=esc(d.my||'-');okLabel=q.answer+'. '+esc(q.choices[q.answer-1]);}
+      const resultStars=(type!=='short')?(q.category==='4'?`<span class="stars" title="출제지수">${STAR(q.exIndex)}</span> <span class="stars" title="출제난도">${STAR(q.exDiff)}</span>`:((q.category==='5'||q.category==='6')?'':`<span class="stars">${STAR(q.freq)}</span>`)):'';
+      const roundBadge=(q.category==='4')?`<span class="pill o" style="margin-left:6px">제${esc(q.round)}회 · 문제${padNum(roundQNumber(q)||(n+1))}</span>`:'';
+      const chapterBadge6=(q.category==='6')?`<span class="pill o" style="margin-left:6px">${esc(chapterTitleFmt(q.chapter))}</span>`:'';
+      const cat5Badge=(q.category==='5'&&q.direct)?`<span class="pill g" style="margin-left:6px">직접 응시</span>`:'';
+      const cat5ResultPrefix=(q.category==='5')?`문제 ${cat5QNumber(q)||(n+1)}번. `:'';
+      const cat6ResultPrefix=(q.category==='6')?`문제 ${cat6QNumber(q)||(n+1)}번. `:'';
+      return `
+      <div style="padding:10px 0;border-bottom:1px solid var(--line)">
+        <div class="row"><b style="font-size:13px">${n+1}. ${d.correct?'<span style="color:var(--ok)">⭕ 정답</span>':'<span style="color:var(--no)">❌ 오답</span>'}</b>${resultStars}${roundBadge}${chapterBadge6}${cat5Badge}</div>
+        <div class="muted" style="font-size:12.5px;white-space:pre-wrap;margin:4px 0">${cat5ResultPrefix}${cat6ResultPrefix}${esc(q.q)}</div>
+        ${q.qimg?`<img class="qimg" src="${q.qimg}">`:''}
+        ${(type==='short'&&d.correct)
+          ?`<div style="font-size:13px">내 답: <b>${myLabel}</b></div>`
+          :`<div style="font-size:13px">내 답: <b>${myLabel}</b> / 정답: <b style="color:var(--ok)">${okLabel}</b></div>`}
+        ${(q.exp||q.eimg)?`<div class="exp">💡 ${fmtExp(q.exp)}${q.eimg?`<img src="${q.eimg}">`:''}</div>`:''}
+      </div>`}).join('')}</div>
+  <button class="btn full" onclick="exam=null;examCat=null;go('exam')">새 시험 보기</button>`;}
+
+function renderStats(){if(!HIST.length){$('#view').innerHTML='<div class="card center muted">아직 응시 기록이 없습니다.<br>시험에 응시하면 통계가 표시됩니다.</div>';return;}
+  const scores=HIST.map(h=>h.score);const myAvg=Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
+  const best=Math.max(...scores);const last=HIST[0];
+  const pr=peers(last.setKey).concat([last.score]).sort((a,b)=>b-a);
+  const avg=Math.round(pr.reduce((a,b)=>a+b,0)/pr.length);const rank=pr.indexOf(last.score)+1;
+  const byDiff={};HIST.forEach(h=>h.detail.forEach(d=>{const q=DB.find(x=>x.id===d.id);if(!q)return;const k=q.freq;byDiff[k]=byDiff[k]||{c:0,t:0};byDiff[k].t++;if(d.correct)byDiff[k].c++;}));
+  const diffLabel={3:'상 ★★★',2:'중 ★★☆',1:'하 ★☆☆'};
+  $('#view').innerHTML=`
+  <div class="card"><h3>📊 최근 시험 경쟁 현황</h3>
+    <div class="stat-grid" style="margin-top:10px">
+      <div class="stat-box"><div class="v">${pr.length}명</div><div class="l">응시 인원</div></div>
+      <div class="stat-box"><div class="v">${avg}점</div><div class="l">평균 점수</div></div>
+      <div class="stat-box"><div class="v">${rank}위</div><div class="l">나의 순위</div></div>
+      <div class="stat-box"><div class="v">${last.score}점</div><div class="l">나의 점수</div></div></div></div>
+  <div class="card"><h3>🏆 나의 성적</h3>
+    <div class="row" style="margin:8px 0"><span class="muted">평균 점수</span><b>${myAvg}점</b></div>
+    <div class="row" style="margin:8px 0"><span class="muted">최고 점수</span><b style="color:var(--ok)">${best}점</b></div>
+    <div class="row" style="margin:8px 0"><span class="muted">총 응시 횟수</span><b>${HIST.length}회</b></div></div>
+  <div class="card"><h3>📚 난이도별 정답률</h3>
+    ${[3,2,1].filter(k=>byDiff[k]).map(k=>{const v=byDiff[k];const p=Math.round(v.c/v.t*100);return `
+      <div style="margin:10px 0"><div class="row"><span style="font-size:13px">${diffLabel[k]}</span><b>${p}% (${v.c}/${v.t})</b></div>
+      <div class="bar"><i style="width:${p}%;background:${p>=70?'var(--ok)':p>=50?'#f59e0b':'var(--no)'}"></i></div></div>`}).join('')}</div>`;}
+
+function renderHist(){if(!HIST.length){$('#view').innerHTML='<div class="card center muted">응시 이력이 없습니다.</div>';return;}
+  $('#view').innerHTML=`
+  <div class="card"><div class="row" style="margin-bottom:10px"><h3>🗂 응시 이력 (${HIST.length}회)</h3></div>
+    <table><tr><th>일시</th><th>점수</th><th>정답</th><th>소요</th><th>순위</th></tr>
+      ${HIST.map(h=>{const pr=peers(h.setKey).concat([h.score]).sort((a,b)=>b-a);const rk=pr.indexOf(h.score)+1;return `
+        <tr><td style="font-size:11px">${h.date.replace(/:\d+$/,'')}</td><td><b>${h.score}</b></td><td>${h.correct}/${h.total}</td><td>${Math.floor(h.sec/60)}:${String(h.sec%60).padStart(2,'0')}</td><td>${rk}/${pr.length}</td></tr>`}).join('')}
+    </table></div>
+  <div class="note">📈 점수 추이: ${HIST.slice(0,10).reverse().map(h=>h.score).join(' → ')}</div>`;}
+
+function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function attr(s){return esc(s).replace(/"/g,'&quot;');}
+// 해설 텍스트의 **굵게**, __밑줄__ 표시를 안전하게 HTML로 변환 (먼저 escape 후 마커만 태그로 치환)
+function fmtExp(s){
+  return esc(s)
+    .replace(/\*\*([\s\S]+?)\*\*/g,'<b>$1</b>')
+    .replace(/__([\s\S]+?)__/g,'<u>$1</u>');
+}
+// 모달 바깥(배경) 클릭으로는 닫히지 않음 - 반드시 X 또는 [닫기] 버튼을 눌러야 닫힘
+function applyQuestionFile(data){
+  let arr=[], vis={}, order=[];
+  if(Array.isArray(data)) arr=data;
+  else if(data && Array.isArray(data.questions)){ arr=data.questions; vis=data.catVis||{}; order=data.catOrder||[]; }
+  DB=arr; CAT_VIS=vis; CAT_ORDER=order;
+}
+async function loadQuestions(){
+  // 수험생용: 접속할 때마다 최신 문제 파일(traffic_question.json)을 불러온다.
+  // (파일이 바뀌지 않았으면 브라우저가 캐시를 재사용하므로 매번 3MB를 다시 받지는 않는다)
+  // 인터넷이 불안정해 불러오지 못하면, 지난번에 성공적으로 불러둔 사본을 대신 사용한다.
+  let loaded=false;
+  try{
+    const res = await fetch('traffic_question.json', {cache:'no-cache'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    applyQuestionFile(data);
+    loaded = DB.length>0;
+    if(loaded){ idbSet('student_cache_v1', data).catch(()=>{}); }
+  }catch(e){
+    console.error('문제 파일 불러오기 실패:', e);
+  }
+  if(!loaded){
+    try{
+      const cached = await idbGet('student_cache_v1');
+      if(cached){ applyQuestionFile(cached); loaded = DB.length>0; }
+    }catch(e){ console.error(e); }
+  }
+  renderNav();
+  if(!loaded){
+    $('#view').innerHTML='<div class="card center">⚠ 문제를 불러오지 못했습니다.<br><span class="muted">인터넷 연결을 확인한 뒤 새로고침해 주세요.</span></div>';
+    return;
+  }
+  migrateDB();
+  render();
+}
+
+loadQuestions();
+</script>
+</body>
+</html>
