@@ -82,15 +82,17 @@ th{background:#f8fafc;font-size:12px;color:#475569;}
 .draghandle:active{cursor:grabbing;}
 .card.cat{user-select:none;}
 .card.cat.dragging{opacity:.55;box-shadow:0 10px 24px rgba(0,0,0,.18);}
+.pbar{background:#f0fdf4;border-bottom:1px solid #bbf7d0;padding:7px 16px;font-size:12px;color:#166534;display:flex;justify-content:space-between;align-items:center;gap:10px;}
 </style>
 </head>
 <body>
 <div class="app">
 <header>
   <h1>🚦 도로교통법규 기출 모의고사</h1>
-  <div class="sub" id="sub">도로교통법규 기출문제 모음</div>
+  <div class="sub">도로교통법규 기출문제 모음</div>
 </header>
 <nav id="nav"></nav>
+<div class="pbar" id="profilebar" style="display:none"></div>
 <div class="wrap" id="view"><div class="card center muted">문제를 불러오는 중입니다…</div></div>
 </div>
 <div class="modal" id="modal"><div class="box" id="modalBox"></div></div>
@@ -261,16 +263,11 @@ function regionOpts(cat){const set=new Set();DB.forEach(q=>{if(cat&&q.category!=
 function yearOpts(cat){const set=new Set();DB.forEach(q=>{if(cat&&q.category!==cat)return;splitYears(q.year).forEach(y=>set.add(y));});return [...set].sort();}
 
 
-function peers(setKey){let seed=0;for(const c of setKey)seed=(seed*31+c.charCodeAt(0))%99991;
-  const rnd=()=>{seed=(seed*1103515245+12345)%2147483648;return seed/2147483648;};
-  const cnt=18+Math.floor(rnd()*40);const arr=[];
-  for(let i=0;i<cnt;i++)arr.push(Math.min(100,Math.round(45+rnd()*52)));return arr;}
-
 let TAB='exam';
-const tabsUser=[['exam','시험응시'],['wrong','오답노트'],['stats','통계'],['hist','이력']];
+const tabsUser=[['exam','시험응시'],['note','오답노트'],['stats','통계'],['hist','이력']];
 function renderNav(){
-  let wn=0;try{wn=wrongList().length;}catch(e){}
-  $('#nav').innerHTML=tabsUser.map(t=>`<button class="${TAB===t[0]?'on':''}" onclick="go('${t[0]}')">${t[1]}${t[0]==='wrong'&&wn?` <span class="pill o" style="margin:0 0 0 2px">${wn}</span>`:''}</button>`).join('');}
+  $('#nav').innerHTML=tabsUser.map(t=>`<button class="${TAB===t[0]?'on':''}" onclick="go('${t[0]}')">${t[1]}</button>`).join('');
+  renderProfileBar();}
 function go(t){TAB=t;if(t==='exam'&&!exam)examCat=null;renderNav();render();}
 // ===== 시험응시: 첫 화면(카테고리 목록) + 카테고리별 시험 =====
 let examCat=null;
@@ -279,7 +276,6 @@ let exam=null;
 
 function render(){
   if(TAB==='exam'){
-    if(exam&&!PROFILE)return renderProfileForm(false);   // 이름·번호 입력 전에는 시험을 시작할 수 없음
     if(exam)return renderRunning();
     if(!examCat)return renderCatList();
     if(examCat==='2')return renderOXSetup();
@@ -289,7 +285,7 @@ function render(){
     if(examCat==='6')return renderCat6ChapterList();
     return renderExamSetup();
   }
-  else if(TAB==='wrong')renderWrong();
+  else if(TAB==='note')renderNote();
   else if(TAB==='stats')renderStats();
   else if(TAB==='hist')renderHist();}
 
@@ -322,7 +318,7 @@ function renderCatList(){
     }).join('');
 }
 
-function selectCat(id){examCat=id;cfg={freq:'',region:'',year:'',count:'10'};render();}
+function selectCat(id){requireProfile(()=>{examCat=id;cfg={freq:'',region:'',year:'',count:'10'};render();});}
 
 // ---- 1 / 4 / 5 : 기존 형식(난이도·지역·연도 + 개수) ----
 function filtered(){return DB.filter(q=>q.category===examCat&&
@@ -407,7 +403,7 @@ function renderOXSetup(){
 }
 function startOXExam(){
   let pool=DB.filter(q=>q.category==='2'&&(!cfg.freq||q.freq==+cfg.freq));
-  if(!pool.length){alert('조건에 맞는 문제가 없습니다. (문제관리/문제추가에서 O/X 문제를 먼저 등록해주세요)');return;}
+  if(!pool.length){alert('조건에 맞는 문제가 없습니다.');return;}
   const cnt=cfg.count==='999'?pool.length:Math.min(+cfg.count,pool.length);
   pool=[...pool].sort(()=>Math.random()-.5).slice(0,cnt);
   exam={type:'ox',cat:'2',qs:pool,i:0,ans:{},start:Date.now()};render();
@@ -429,7 +425,7 @@ function renderShortChapterList(){
 }
 function startShortChapterExam(n){
   const pool=DB.filter(q=>q.category==='3'&&String(q.chapter)===n);
-  if(!pool.length){alert('이 챕터에 등록된 문제가 없습니다. (문제관리/문제추가에서 먼저 등록해주세요)');return;}
+  if(!pool.length){alert('이 챕터에 등록된 문제가 없습니다.');return;}
   const shuffled=[...pool].sort(()=>Math.random()-.5);
   exam={type:'short',cat:'3',qs:shuffled,i:0,ans:{},start:Date.now()};render();
 }
@@ -450,7 +446,7 @@ function renderRoundList(){
 }
 function startRoundExam(n){
   const pool=DB.filter(q=>q.category==='4'&&String(q.round)===n).sort((a,b)=>a.id-b.id);
-  if(!pool.length){alert('이 회차에 등록된 문제가 없습니다. (문제관리/문제추가에서 먼저 등록해주세요)');return;}
+  if(!pool.length){alert('이 회차에 등록된 문제가 없습니다.');return;}
   exam={type:'mc',cat:'4',qs:pool,i:0,ans:{},start:Date.now()};render();
 }
 
@@ -471,7 +467,7 @@ function renderCat6ChapterList(){
 }
 function startCat6Exam(n){
   const pool=DB.filter(q=>q.category==='6'&&String(q.chapter)===n).sort((a,b)=>a.id-b.id);
-  if(!pool.length){alert('이 챕터에 등록된 문제가 없습니다. (문제관리/문제추가에서 먼저 등록해주세요)');return;}
+  if(!pool.length){alert('이 챕터에 등록된 문제가 없습니다.');return;}
   exam={type:'mc',cat:'6',qs:pool,i:0,ans:{},start:Date.now()};render();
 }
 
@@ -586,45 +582,285 @@ function isCorrect(q,my,type){
   return my===q.answer;
 }
 
+// ===== 응시자 정보 / 결과 전송 / 오답노트 =====
+// IS_ADMIN_FILE: 관리자용 파일이면 true. 관리자용에서는 응시자 정보 입력과 결과 전송을 하지 않는다(미리보기/테스트용).
+const IS_ADMIN_FILE = false;
+let SCRIPT_URL = '';
+try{ if(IS_ADMIN_FILE) SCRIPT_URL = localStorage.getItem('adm_script_url')||''; }catch(e){}
+const PROFILE_KEY='student_profile_v1', PENDING_KEY='pending_results_v1';
+// 개인정보 수집·이용 동의 문구 (운영 방식에 맞게 필요하면 수정하세요)
+const CONSENT_LINES=[
+  '수집 항목: 이름, 휴대폰 번호, 응시 결과(점수·정답 수·응시 일시·소요 시간)',
+  '이용 목적: 모의고사 응시자 확인 및 성적 관리',
+  '보유 기간: 모의고사 운영 종료 시까지',
+  '동의를 거부할 수 있으며, 거부하면 시험에 응시할 수 없습니다.'
+];
+function okScriptUrl(u){
+  u=String(u||'').trim();
+  return /^https:\/\/script\.google\.com\/(a\/macros\/[\w.-]+\/|macros\/)s\/[\w-]+\/exec$/.test(u)?u:'';
+}
+function normPhone(s){return String(s||'').replace(/\D/g,'');}
+function fmtPhone(s){const d=normPhone(s);
+  if(d.length===11)return d.replace(/(\d{3})(\d{4})(\d{4})/,'$1-$2-$3');
+  if(d.length===10)return d.replace(/(\d{3})(\d{3})(\d{4})/,'$1-$2-$3');
+  return d;}
+function validPhone(s){return /^01[016789]\d{7,8}$/.test(normPhone(s));}
+function maskPhone(p){const d=normPhone(p);return d.length>=7?d.slice(0,3)+'-****-'+d.slice(-4):String(p||'');}
+
+// ---- 응시자 정보 ----
+function getProfile(){
+  try{const p=JSON.parse(localStorage.getItem(PROFILE_KEY)||'null');
+    if(p&&p.name&&validPhone(p.phone))return p;}catch(e){}
+  return null;
+}
+function setProfile(p){try{localStorage.setItem(PROFILE_KEY,JSON.stringify(p));}catch(e){}}
+let _afterProfile=null;
+function requireProfile(next){
+  if(IS_ADMIN_FILE||getProfile()){next();return;}
+  openProfileModal(next,false);
+}
+function openProfileModal(next,editing){
+  _afterProfile=next||null;
+  const p=getProfile()||{name:'',phone:''};
+  $('#modalBox').innerHTML=`
+    <h3 style="margin-bottom:6px">👤 응시자 정보 ${editing?'수정':'입력'}</h3>
+    <p class="muted" style="margin-bottom:12px">${editing?'이름과 휴대폰 번호를 수정할 수 있습니다.':'시험을 시작하려면 이름과 휴대폰 번호를 입력해 주세요.'}</p>
+    <div class="fld"><label>이름</label><input id="pf_name" maxlength="20" autocomplete="name" value="${attr(p.name)}" placeholder="홍길동"></div>
+    <div class="fld"><label>휴대폰 번호</label><input id="pf_phone" inputmode="numeric" maxlength="13" autocomplete="tel" value="${attr(fmtPhone(p.phone))}" placeholder="010-1234-5678" oninput="this.value=fmtPhone(normPhone(this.value).slice(0,11))"></div>
+    <div class="note" style="margin-bottom:10px"><b>개인정보 수집·이용 동의</b><br>${CONSENT_LINES.map(l=>'• '+esc(l)).join('<br>')}</div>
+    <label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;margin-bottom:14px"><input type="checkbox" id="pf_agree" style="width:auto;margin-top:4px" ${editing?'checked':''}> 위 내용을 확인했으며 개인정보 수집·이용에 동의합니다.</label>
+    <div class="row"><button class="btn sec" onclick="cancelProfile()">취소</button><button class="btn" onclick="saveProfile()">${editing?'저장':'확인하고 시작'}</button></div>`;
+  $('#modal').classList.add('on');
+  setTimeout(()=>{const el=$('#pf_name');if(el)el.focus();},50);
+}
+function saveProfile(){
+  const name=($('#pf_name').value||'').trim().replace(/\s+/g,' ');
+  const phone=normPhone($('#pf_phone').value);
+  if(name.length<2||name.length>20){alert('이름을 2~20자로 입력해 주세요.');return;}
+  if(!validPhone(phone)){alert('휴대폰 번호를 올바르게 입력해 주세요.\n(예: 010-1234-5678)');return;}
+  if(!$('#pf_agree').checked){alert('개인정보 수집·이용에 동의해야 시험을 진행할 수 있습니다.');return;}
+  setProfile({name,phone,agreedAt:new Date().toISOString()});
+  const cb=_afterProfile;_afterProfile=null;
+  closeM();renderProfileBar();
+  if(cb)cb();
+}
+function cancelProfile(){_afterProfile=null;closeM();}
+function renderProfileBar(){
+  const el=document.getElementById('profilebar');if(!el)return;
+  const p=getProfile();
+  if(IS_ADMIN_FILE||!p){el.style.display='none';return;}
+  el.style.display='';
+  el.innerHTML=`<span>👤 <b>${esc(p.name)}</b> · ${esc(maskPhone(p.phone))}</span><button class="btn tiny sec" onclick="openProfileModal(null,true)">변경</button>`;
+}
+
+// ---- 시험 이름(라벨) ----
+function examLabel(cat,qs){
+  if(cat==='retry')return '오답 다시풀기';
+  const c=CATS.find(x=>x.id===cat);const base=c?c.name:'시험';
+  const q0=qs[0]||{};
+  if(cat==='4')return `${base} · 제${q0.round}회`;
+  if(cat==='3'||cat==='6')return `${base} · Chapter ${q0.chapter}`;
+  if(cat==='5'){
+    const ys=[...new Set(qs.flatMap(q=>splitYears(q.year)))];
+    const rs=[...new Set(qs.flatMap(q=>splitRegions(q.region)))];
+    return base+(ys.length===1?' · '+ys[0]:'')+(rs.length===1?' · '+rs[0]:'');
+  }
+  return base;
+}
+function recLabel(rec){
+  if(rec.label)return rec.label;
+  const qs=(rec.detail||[]).map(d=>DB.find(q=>q.id===d.id)).filter(Boolean);
+  return qs.length?examLabel(qs[0].category,qs):'시험';
+}
+
+// ---- 결과 전송 (구글 시트) ----
+function newId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+function loadPending(){try{return JSON.parse(localStorage.getItem(PENDING_KEY)||'[]')||[];}catch(e){return [];}}
+function savePending(a){try{localStorage.setItem(PENDING_KEY,JSON.stringify(a));}catch(e){}}
+let _flushing=null;
+function flushPending(){
+  if(IS_ADMIN_FILE||!SCRIPT_URL)return Promise.resolve();
+  if(_flushing)return _flushing;
+  const p=(async()=>{
+    const done=new Set();
+    try{
+      while(true){
+        const todo=loadPending().filter(x=>!done.has(x.id));
+        if(!todo.length)break;
+        const item=todo[0];
+        try{
+          const res=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(Object.assign({action:'submit'},item))});
+          const j=await res.json();
+          if(j&&(j.ok||j.permanent))done.add(item.id);   // 형식 오류 등 재시도해도 소용없는 건 버림
+          else break;
+        }catch(e){break;}                                // 네트워크 문제면 다음 기회에 다시 시도
+      }
+    }catch(e){console.error(e);}
+    if(done.size)savePending(loadPending().filter(x=>!done.has(x.id)));
+  })();
+  _flushing=p;
+  p.then(()=>{if(_flushing===p)_flushing=null;});   // 끝난 뒤에 '전송 중' 표시를 해제한다
+  return p;
+}
+function queueResult(rec){
+  if(IS_ADMIN_FILE||!SCRIPT_URL)return;
+  const p=getProfile();if(!p)return;
+  const q=loadPending();
+  q.push({id:rec.id,date:rec.date,name:p.name,phone:fmtPhone(p.phone),label:rec.label,score:rec.score,correct:rec.correct,total:rec.total,sec:rec.sec,setKey:rec.setKey});
+  savePending(q);flushPending();
+}
+
+// ---- 전체 응시 현황 (서버 집계: 점수만 내려받음) ----
+async function loadRealStat(rec){
+  const box=document.getElementById('realstat');
+  if(!box||IS_ADMIN_FILE||!SCRIPT_URL||!rec||!rec.id)return;
+  const label=recLabel(rec);
+  if(label==='오답 다시풀기'){box.innerHTML='';return;}
+  box.innerHTML='<div class="card center muted">📊 전체 응시 현황을 불러오는 중…</div>';
+  try{
+    await flushPending();
+    if(loadPending().some(x=>x.id===rec.id)){
+      box.innerHTML='<div class="card center muted">📡 결과 전송 대기 중입니다. 인터넷에 연결되면 전체 현황이 표시됩니다.</div>';return;}
+    const res=await fetch(SCRIPT_URL+'?action=stats&label='+encodeURIComponent(label));
+    const j=await res.json();if(!j||!j.ok)throw new Error('stats');
+    const sc=(j.scores||[]).map(Number).filter(x=>isFinite(x));
+    if(!sc.length){box.innerHTML='';return;}
+    const n=sc.length,avg=Math.round(sc.reduce((a,b)=>a+b,0)/n);
+    const rank=sc.filter(s=>s>rec.score).length+1,pct=Math.max(1,Math.ceil(rank/n*100));
+    box.innerHTML=`<div class="card"><h3>📊 전체 응시 현황</h3>
+      <div class="muted" style="font-size:12px;margin-bottom:8px">${esc(label)}</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="v">${n}건</div><div class="l">응시 기록</div></div>
+        <div class="stat-box"><div class="v">${avg}점</div><div class="l">평균 점수</div></div>
+        <div class="stat-box"><div class="v">${rank}위</div><div class="l">나의 순위</div></div>
+        <div class="stat-box"><div class="v">상위 ${pct}%</div><div class="l">백분위</div></div></div>
+      <div class="muted" style="font-size:11px;margin-top:8px">같은 시험에 응시한 전체 기록(재응시 포함) 기준입니다.</div></div>`;
+  }catch(e){box.innerHTML='';}
+}
+
+// ---- 시험 제출 / 결과 / 복기 ----
 function submitExam(){const {qs,ans,type}=exam;let correct=0;
   qs.forEach(q=>{if(isCorrect(q,ans[q.id],type))correct++;});
   const score=Math.round(correct/qs.length*100);const sec=Math.round((Date.now()-exam.start)/1000);
-  const setKey=qs.map(q=>q.id).join('-');
-  const rec={date:new Date().toLocaleString('ko-KR'),score,correct,total:qs.length,sec,setKey,type,
+  const setKey=(exam.cat==='retry'?'retry-':'')+qs.map(q=>q.id).join('-');
+  const rec={id:newId(),date:new Date().toLocaleString('ko-KR'),score,correct,total:qs.length,sec,setKey,type,label:examLabel(exam.cat,qs),
     detail:qs.map(q=>({id:q.id,my:ans[q.id],ok:q.answer,correct:isCorrect(q,ans[q.id],type)}))};
-  rec.cat=exam.cat;rec.label=examLabel(exam);rec.sid=newSid();
-  HIST.unshift(rec);saveHist();enqueueResult(rec);renderResult(rec,qs,type);setSyncNote();}
+  HIST.unshift(rec);saveHist();queueResult(rec);
+  exam=null;
+  renderResult(rec,qs,type);}
 
+function resultItemsHTML(rec,qs,type,onlyWrong){
+  return qs.map((q,n)=>{const d=rec.detail.find(x=>x.id===q.id);if(!d)return '';
+    if(onlyWrong&&d.correct)return '';
+    let myLabel,okLabel;
+    if(type==='ox'){myLabel=d.my===1?'⭕':d.my===2?'❌':'-';okLabel=q.answer===1?'⭕':'❌';}
+    else if(type==='short'){
+      const ansArr=toAnswerArray(q.answer);
+      const myArr=Array.isArray(d.my)?d.my:(d.my==null?[]:[d.my]);
+      myLabel=ansArr.length>1?ansArr.map((_,k)=>ansMark(k)+' '+esc(myArr[k]||'-')).join(', '):esc(myArr[0]||'-');
+      const firstAlts=ansArr.map(a=>splitAlternatives(a)[0]);
+      okLabel=ansArr.length>1?firstAlts.map((a,k)=>ansMark(k)+' '+esc(a)).join(', '):esc(firstAlts[0]);
+    }
+    else{myLabel=esc(d.my||'-');okLabel=q.answer+'. '+esc((q.choices||[])[q.answer-1]);}
+    const resultStars=(type!=='short')?(q.category==='4'?`<span class="stars" title="출제지수">${STAR(q.exIndex)}</span> <span class="stars" title="출제난도">${STAR(q.exDiff)}</span>`:((q.category==='5'||q.category==='6')?'':`<span class="stars">${STAR(q.freq)}</span>`)):'';
+    const roundBadge=(q.category==='4')?`<span class="pill o" style="margin-left:6px">제${esc(q.round)}회 · 문제${padNum(roundQNumber(q)||(n+1))}</span>`:'';
+    const chapterBadge6=(q.category==='6')?`<span class="pill o" style="margin-left:6px">${esc(chapterTitleFmt(q.chapter))}</span>`:'';
+    const cat5Badge=(q.category==='5'&&q.direct)?`<span class="pill g" style="margin-left:6px">직접 응시</span>`:'';
+    const cat5ResultPrefix=(q.category==='5')?`문제 ${cat5QNumber(q)||(n+1)}번. `:'';
+    const cat6ResultPrefix=(q.category==='6')?`문제 ${cat6QNumber(q)||(n+1)}번. `:'';
+    return `
+    <div style="padding:10px 0;border-bottom:1px solid var(--line)">
+      <div class="row"><b style="font-size:13px">${n+1}. ${d.correct?'<span style="color:var(--ok)">⭕ 정답</span>':'<span style="color:var(--no)">❌ 오답</span>'}</b>${resultStars}${roundBadge}${chapterBadge6}${cat5Badge}</div>
+      <div class="muted" style="font-size:12.5px;white-space:pre-wrap;margin:4px 0">${cat5ResultPrefix}${cat6ResultPrefix}${esc(q.q)}</div>
+      ${q.qimg?`<img class="qimg" src="${q.qimg}">`:''}
+      ${(type==='short'&&d.correct)
+        ?`<div style="font-size:13px">내 답: <b>${myLabel}</b></div>`
+        :`<div style="font-size:13px">내 답: <b>${myLabel}</b> / 정답: <b style="color:var(--ok)">${okLabel}</b></div>`}
+      ${(q.exp||q.eimg)?`<div class="exp">💡 ${fmtExp(q.exp)}${q.eimg?`<img src="${q.eimg}">`:''}</div>`:''}
+    </div>`;}).join('');
+}
 function renderResult(rec,qs,type){type=type||rec.type||'mc';
-  const pr=peers(rec.setKey).concat([rec.score]).sort((a,b)=>b-a);
-  const avg=Math.round(pr.reduce((a,b)=>a+b,0)/pr.length);const rank=pr.indexOf(rec.score)+1;
+  const wrongN=rec.total-rec.correct;
   $('#view').innerHTML=`
   <div class="card center"><div class="muted">획득 점수</div><div class="big" style="font-size:46px">${rec.score}점</div>
     <div class="muted">${rec.correct} / ${rec.total} 정답 · 소요 ${Math.floor(rec.sec/60)}분 ${rec.sec%60}초</div></div>
-  <div class="stat-grid">
-    <div class="stat-box"><div class="v">${pr.length}명</div><div class="l">응시 인원</div></div>
-    <div class="stat-box"><div class="v">${avg}점</div><div class="l">평균 점수</div></div>
-    <div class="stat-box"><div class="v">${rank}위</div><div class="l">나의 순위</div></div>
-    <div class="stat-box"><div class="v">상위 ${Math.round(rank/pr.length*100)}%</div><div class="l">백분위</div></div></div>
-  <div class="card"><h3>📋 문항별 결과</h3>
-    ${qs.map((q,n)=>resultItemHtml(q,rec.detail.find(x=>x.id===q.id),n,type)).join('')}</div>
-  <div class="note" id="syncNote" style="display:none;margin-bottom:12px"></div>
-  <button class="btn full" onclick="exam=null;examCat=null;go('exam')">새 시험 보기</button>`;}
+  <div id="realstat"></div>
+  <div class="card"><h3>📋 문항별 결과</h3>${resultItemsHTML(rec,qs,type,false)}</div>
+  ${wrongN>0?`<button class="btn full" style="margin-bottom:8px" onclick="startRetryFromRec(0)">❌ 틀린 문제만 다시 풀기 (${wrongN}문항)</button>`:''}
+  <button class="btn full" onclick="exam=null;examCat=null;go('exam')">새 시험 보기</button>`;
+  loadRealStat(rec);}
 
+// ---- 오답노트 ----
+function wrongList(){   // 가장 최근 응시 결과 기준으로 아직 틀린 상태인 문제
+  const seen={},out=[];
+  HIST.forEach(h=>(h.detail||[]).forEach(d=>{
+    if(seen[d.id])return;seen[d.id]=1;
+    if(!d.correct){const q=DB.find(x=>x.id===d.id);if(q)out.push(q);}
+  }));
+  return out;
+}
+function beginRetry(pool,type){
+  pool=[...pool].sort(()=>Math.random()-.5);
+  TAB='exam';exam={type,cat:'retry',qs:pool,i:0,ans:{},start:Date.now()};
+  renderNav();render();window.scrollTo(0,0);
+}
+function startRetryType(k){
+  requireProfile(()=>{
+    const pool=wrongList().filter(q=>(q.type||'mc')===k);
+    if(!pool.length){alert('다시 풀 오답이 없습니다.');return;}
+    beginRetry(pool,k);
+  });
+}
+function startRetryFromRec(idx){
+  const h=HIST[idx];if(!h)return;
+  const pool=(h.detail||[]).filter(d=>!d.correct).map(d=>DB.find(q=>q.id===d.id)).filter(Boolean);
+  if(!pool.length){alert('다시 풀 문제가 없습니다. (문제가 삭제되었거나 모두 맞혔습니다)');return;}
+  requireProfile(()=>beginRetry(pool,h.type||'mc'));
+}
+function renderNote(){
+  if(!HIST.length){$('#view').innerHTML='<div class="card center muted">아직 응시한 시험이 없습니다.<br>시험을 보면 이곳에서 복기하고 오답을 다시 풀 수 있어요.</div>';return;}
+  const wl=wrongList();const by={mc:[],ox:[],short:[]};
+  wl.forEach(q=>{(by[q.type||'mc']||by.mc).push(q);});
+  const tl={mc:'객관식',ox:'O/X',short:'주관식 단답형'};
+  $('#view').innerHTML=`
+  <div class="card"><h3>📝 오답노트</h3>
+    <p class="muted" style="margin:6px 0 12px">가장 최근에 풀었을 때 틀린 문제가 모입니다. 다시 풀어서 맞히면 목록에서 빠져요.</p>
+    ${wl.length?['mc','ox','short'].filter(k=>by[k].length).map(k=>`<button class="btn full" style="margin-bottom:8px" onclick="startRetryType('${k}')">${tl[k]} 오답 ${by[k].length}문항 다시 풀기</button>`).join(''):'<div class="center muted">🎉 틀린 상태로 남은 문제가 없습니다.</div>'}
+  </div>
+  <div class="card"><h3>🗂 응시한 시험 복기</h3>
+    ${HIST.slice(0,50).map((h,idx)=>`<div class="row" style="padding:10px 0;border-bottom:1px solid var(--line)">
+        <div style="min-width:0"><div style="font-size:13px;font-weight:700">${esc(recLabel(h))}</div>
+        <div class="muted" style="font-size:11px">${esc(h.date.replace(/:\d+$/,''))} · ${h.correct}/${h.total} · ${h.score}점</div></div>
+        <button class="btn sm sec" onclick="openReview(${idx})">복기</button></div>`).join('')}
+    ${HIST.length>50?'<div class="muted" style="margin-top:8px">최근 50회까지 표시됩니다.</div>':''}
+  </div>`;}
+let REVIEW={idx:-1,onlyWrong:false};
+function openReview(idx){REVIEW={idx,onlyWrong:false};TAB='note';renderNav();renderReview();window.scrollTo(0,0);}
+function renderReview(){
+  const h=HIST[REVIEW.idx];if(!h){renderNote();return;}
+  const type=h.type||'mc';
+  const qs=(h.detail||[]).map(d=>DB.find(q=>q.id===d.id)).filter(Boolean);
+  const wrongN=(h.detail||[]).filter(d=>!d.correct&&qs.some(q=>q.id===d.id)).length;
+  const body=resultItemsHTML(h,qs,type,REVIEW.onlyWrong);
+  $('#view').innerHTML=`
+  <div class="card">
+    <button class="btn sm sec" onclick="renderNote()">◀ 목록으로</button>
+    <h3 style="margin-top:10px">${esc(recLabel(h))}</h3>
+    <div class="muted" style="font-size:12px">${esc(h.date)} · ${h.score}점 (${h.correct}/${h.total})</div>
+    <div class="row" style="margin-top:12px;gap:8px">
+      <button class="btn sm ${REVIEW.onlyWrong?'sec':''}" style="flex:1" onclick="REVIEW.onlyWrong=false;renderReview()">전체 보기</button>
+      <button class="btn sm ${REVIEW.onlyWrong?'':'sec'}" style="flex:1" onclick="REVIEW.onlyWrong=true;renderReview()">오답만 (${wrongN})</button></div></div>
+  <div class="card">${body||'<div class="center muted">🎉 틀린 문제가 없습니다.</div>'}</div>
+  ${wrongN?`<button class="btn full" onclick="startRetryFromRec(${REVIEW.idx})">❌ 이 시험의 오답 다시 풀기 (${wrongN}문항)</button>`:''}`;}
+
+// ---- 통계 / 이력 ----
 function renderStats(){if(!HIST.length){$('#view').innerHTML='<div class="card center muted">아직 응시 기록이 없습니다.<br>시험에 응시하면 통계가 표시됩니다.</div>';return;}
   const scores=HIST.map(h=>h.score);const myAvg=Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
   const best=Math.max(...scores);const last=HIST[0];
-  const pr=peers(last.setKey).concat([last.score]).sort((a,b)=>b-a);
-  const avg=Math.round(pr.reduce((a,b)=>a+b,0)/pr.length);const rank=pr.indexOf(last.score)+1;
-  const byDiff={};HIST.forEach(h=>h.detail.forEach(d=>{const q=DB.find(x=>x.id===d.id);if(!q)return;const k=q.freq;byDiff[k]=byDiff[k]||{c:0,t:0};byDiff[k].t++;if(d.correct)byDiff[k].c++;}));
+  const byDiff={};HIST.forEach(h=>(h.detail||[]).forEach(d=>{const q=DB.find(x=>x.id===d.id);if(!q)return;const k=q.freq;byDiff[k]=byDiff[k]||{c:0,t:0};byDiff[k].t++;if(d.correct)byDiff[k].c++;}));
   const diffLabel={3:'상 ★★★',2:'중 ★★☆',1:'하 ★☆☆'};
   $('#view').innerHTML=`
-  <div class="card"><h3>📊 최근 시험 경쟁 현황</h3>
-    <div class="stat-grid" style="margin-top:10px">
-      <div class="stat-box"><div class="v">${pr.length}명</div><div class="l">응시 인원</div></div>
-      <div class="stat-box"><div class="v">${avg}점</div><div class="l">평균 점수</div></div>
-      <div class="stat-box"><div class="v">${rank}위</div><div class="l">나의 순위</div></div>
-      <div class="stat-box"><div class="v">${last.score}점</div><div class="l">나의 점수</div></div></div></div>
+  <div id="realstat"></div>
   <div class="card"><h3>🏆 나의 성적</h3>
     <div class="row" style="margin:8px 0"><span class="muted">평균 점수</span><b>${myAvg}점</b></div>
     <div class="row" style="margin:8px 0"><span class="muted">최고 점수</span><b style="color:var(--ok)">${best}점</b></div>
@@ -632,245 +868,17 @@ function renderStats(){if(!HIST.length){$('#view').innerHTML='<div class="card c
   <div class="card"><h3>📚 난이도별 정답률</h3>
     ${[3,2,1].filter(k=>byDiff[k]).map(k=>{const v=byDiff[k];const p=Math.round(v.c/v.t*100);return `
       <div style="margin:10px 0"><div class="row"><span style="font-size:13px">${diffLabel[k]}</span><b>${p}% (${v.c}/${v.t})</b></div>
-      <div class="bar"><i style="width:${p}%;background:${p>=70?'var(--ok)':p>=50?'#f59e0b':'var(--no)'}"></i></div></div>`}).join('')}</div>`;}
+      <div class="bar"><i style="width:${p}%;background:${p>=70?'var(--ok)':p>=50?'#f59e0b':'var(--no)'}"></i></div></div>`}).join('')}</div>`;
+  loadRealStat(last);}
 
 function renderHist(){if(!HIST.length){$('#view').innerHTML='<div class="card center muted">응시 이력이 없습니다.</div>';return;}
   $('#view').innerHTML=`
-  <div class="card"><div class="row" style="margin-bottom:10px"><h3>🗂 응시 이력 (${HIST.length}회)</h3></div>
-    <table><tr><th>일시</th><th>점수</th><th>정답</th><th>소요</th><th>순위</th><th>복기</th></tr>
-      ${HIST.map((h,hi)=>{const pr=peers(h.setKey).concat([h.score]).sort((a,b)=>b-a);const rk=pr.indexOf(h.score)+1;return `
-        <tr><td style="font-size:11px">${h.date.replace(/:\d+$/,'')}</td><td><b>${h.score}</b></td><td>${h.correct}/${h.total}</td><td>${Math.floor(h.sec/60)}:${String(h.sec%60).padStart(2,'0')}</td><td>${rk}/${pr.length}</td><td><button class="btn tiny sec" onclick="openReview(${hi})">복기</button></td></tr>`}).join('')}
+  <div class="card"><div class="row" style="margin-bottom:10px"><h3>🗂 응시 이력 (${HIST.length}회)</h3>${ROLE==='admin'?'<button class="btn sm dang" onclick="if(confirm(\'모든 이력을 삭제할까요?\')){HIST=[];saveHist();renderHist();}">전체삭제</button>':''}</div>
+    <table><tr><th>일시</th><th>시험</th><th>점수</th><th>정답</th><th>소요</th></tr>
+      ${HIST.map(h=>`
+        <tr><td style="font-size:11px">${esc(h.date.replace(/:\d+$/,''))}</td><td style="font-size:11px;text-align:left">${esc(recLabel(h))}</td><td><b>${h.score}</b></td><td>${h.correct}/${h.total}</td><td>${Math.floor(h.sec/60)}:${String(h.sec%60).padStart(2,'0')}</td></tr>`).join('')}
     </table></div>
   <div class="note">📈 점수 추이: ${HIST.slice(0,10).reverse().map(h=>h.score).join(' → ')}</div>`;}
-
-function resultItemHtml(q,d,n,type,opts){opts=opts||{};
-      let myLabel,okLabel;
-      if(type==='ox'){myLabel=d.my===1?'⭕':d.my===2?'❌':'-';okLabel=q.answer===1?'⭕':'❌';}
-      else if(type==='short'){
-        const ansArr=toAnswerArray(q.answer);
-        const myArr=Array.isArray(d.my)?d.my:(d.my==null?[]:[d.my]);
-        myLabel=ansArr.length>1?ansArr.map((_,k)=>ansMark(k)+' '+esc(myArr[k]||'-')).join(', '):esc(myArr[0]||'-');
-        // 오답일 때만 정답을 공개하며, "A 또는 B" 처럼 중복 정답이 있으면 첫번째 답만 표시
-        const firstAlts=ansArr.map(a=>splitAlternatives(a)[0]);
-        okLabel=ansArr.length>1?firstAlts.map((a,k)=>ansMark(k)+' '+esc(a)).join(', '):esc(firstAlts[0]);
-      }
-      else{myLabel=esc(d.my||'-');okLabel=q.answer+'. '+esc(q.choices[q.answer-1]);}
-      const resultStars=(type!=='short')?(q.category==='4'?`<span class="stars" title="출제지수">${STAR(q.exIndex)}</span> <span class="stars" title="출제난도">${STAR(q.exDiff)}</span>`:((q.category==='5'||q.category==='6')?'':`<span class="stars">${STAR(q.freq)}</span>`)):'';
-      const roundBadge=(q.category==='4')?`<span class="pill o" style="margin-left:6px">제${esc(q.round)}회 · 문제${padNum(roundQNumber(q)||(n+1))}</span>`:'';
-      const chapterBadge6=(q.category==='6')?`<span class="pill o" style="margin-left:6px">${esc(chapterTitleFmt(q.chapter))}</span>`:'';
-      const cat5Badge=(q.category==='5'&&q.direct)?`<span class="pill g" style="margin-left:6px">직접 응시</span>`:'';
-      const cat5ResultPrefix=(q.category==='5')?`문제 ${cat5QNumber(q)||(n+1)}번. `:'';
-      const cat6ResultPrefix=(q.category==='6')?`문제 ${cat6QNumber(q)||(n+1)}번. `:'';
-      return `
-      <div style="padding:10px 0;border-bottom:1px solid var(--line)">
-        <div class="row"><b style="font-size:13px">${opts.label||((n+1)+'.')} ${d.correct?'<span style="color:var(--ok)">⭕ 정답</span>':'<span style="color:var(--no)">❌ 오답</span>'}</b>${resultStars}${roundBadge}${chapterBadge6}${cat5Badge}</div>
-        ${opts.extra||''}
-        <div class="muted" style="font-size:12.5px;white-space:pre-wrap;margin:4px 0">${cat5ResultPrefix}${cat6ResultPrefix}${esc(q.q)}</div>
-        ${q.qimg?`<img class="qimg" src="${q.qimg}">`:''}
-        ${(type==='short'&&d.correct)
-          ?`<div style="font-size:13px">내 답: <b>${myLabel}</b></div>`
-          :`<div style="font-size:13px">내 답: <b>${myLabel}</b> / 정답: <b style="color:var(--ok)">${okLabel}</b></div>`}
-        ${(q.exp||q.eimg)?`<div class="exp">💡 ${fmtExp(q.exp)}${q.eimg?`<img src="${q.eimg}">`:''}</div>`:''}
-      </div>`}
-
-// ===== 오답노트 / 시험 복기 =====
-// 오답 기준: 각 문제의 "가장 최근 응시"가 오답인 문제. 다시 풀어 맞히면 자동으로 오답노트에서 빠진다.
-function wrongList(){
-  const byId=new Map(DB.map(q=>[q.id,q]));
-  const latest=new Map(), cnt={};
-  HIST.forEach(h=>{(h.detail||[]).forEach(d=>{
-    if(!d.correct)cnt[d.id]=(cnt[d.id]||0)+1;
-    if(!latest.has(d.id))latest.set(d.id,{d:d,date:h.date});   // HIST는 최신순이므로 처음 만난 기록이 최근 기록
-  });});
-  const out=[];
-  latest.forEach((v,id)=>{
-    if(v.d.correct)return;
-    const q=byId.get(id);
-    if(!q||!isCatVisible(q.category))return;
-    out.push({q:q,d:v.d,date:v.date,wc:cnt[id]||1});
-  });
-  return out;
-}
-function renderWrong(){
-  const list=wrongList();
-  if(!list.length){
-    $('#view').innerHTML='<div class="card center muted">'+(HIST.length?'🎉 현재 오답노트에 남은 문제가 없습니다.':'아직 응시 기록이 없습니다.<br>시험에서 틀린 문제가 여기에 모입니다.')+'</div>';
-    return;
-  }
-  const groups=CATS.filter(c=>list.some(x=>x.q.category===c.id));
-  $('#view').innerHTML=
-    `<div class="note" style="margin-bottom:12px">📒 가장 최근 응시에서 틀린 문제가 모입니다. 다시 풀어서 맞히면 자동으로 빠집니다. (총 <b>${list.length}</b>문항)</div>`+
-    groups.map((c,gi)=>{
-      const items=list.filter(x=>x.q.category===c.id);
-      return `<details class="card" ${gi===0?'open':''}>
-        <summary style="cursor:pointer;font-weight:700;font-size:15px">${c.icon} ${esc(c.name)} <span class="pill x" style="margin-left:6px">${items.length}문항</span></summary>
-        <div style="margin-top:12px"><button class="btn sm full" onclick="startRetry('${c.id}')">이 유형 오답 ${items.length}문항 다시 풀기 ▶</button></div>
-        ${items.map((x,k)=>resultItemHtml(x.q,x.d,k,x.q.type||'mc',{
-          label:(k+1)+'.',
-          extra:`<div class="muted" style="font-size:11px">최근 응시 ${esc(String(x.date).replace(/:\d+$/,''))} · 누적 오답 ${x.wc}회</div>`
-        })).join('')}
-      </details>`;
-    }).join('');
-}
-function launchRetry(qs,cat){
-  if(!qs.length){alert('다시 풀 문제가 없습니다.');return;}
-  if(exam&&!confirm('진행 중인 시험이 있습니다. 중단하고 새로 시작할까요?'))return;
-  qs=[...qs];
-  if(cat==='1'||cat==='2')qs.sort(()=>Math.random()-.5); else qs.sort((a,b)=>a.id-b.id);
-  exam={type:qs[0].type||'mc',cat:cat,qs:qs,i:0,ans:{},start:Date.now(),retry:true};
-  TAB='exam';examCat=cat;renderNav();render();
-}
-function startRetry(catId){
-  launchRetry(wrongList().filter(x=>x.q.category===catId).map(x=>x.q),catId);
-}
-// 응시 이력에서 한 회차를 문항별로 복기 (순위 등 통계 없이 내 답/정답/해설만 표시)
-function openReview(i,onlyWrong){
-  const rec=HIST[i];if(!rec)return;
-  const type=rec.type||'mc';
-  const byId=new Map(DB.map(q=>[q.id,q]));
-  const rows=rec.detail.map(d=>({d:d,q:byId.get(d.id)})).filter(r=>r.q);
-  const missing=rec.detail.length-rows.length;
-  const shown=onlyWrong?rows.filter(r=>!r.d.correct):rows;
-  const wrongQs=rows.filter(r=>!r.d.correct).map(r=>r.q);
-  TAB='hist';renderNav();
-  $('#view').innerHTML=`
-  <div class="card">
-    <button class="btn sm sec" onclick="go('hist')">◀ 이력으로</button>
-    <h3 style="margin-top:10px">🔍 시험 복기</h3>
-    <div class="muted">${esc(String(rec.date).replace(/:\d+$/,''))} · ${rec.score}점 (${rec.correct}/${rec.total} 정답) · 소요 ${Math.floor(rec.sec/60)}분 ${rec.sec%60}초</div>
-    <div class="row" style="margin-top:12px;gap:8px;flex-wrap:wrap">
-      <button class="btn sm ${onlyWrong?'':'sec'}" onclick="openReview(${i},${!onlyWrong})">${onlyWrong?'✓ 틀린 문제만 보는 중 (전체 보기)':'틀린 문제만 보기'}</button>
-      ${wrongQs.length?`<button class="btn sm ok" onclick="launchRetry(wrongQs_${i},'${wrongQs[0].category}')">틀린 ${wrongQs.length}문항 다시 풀기 ▶</button>`:''}
-    </div>
-  </div>
-  ${missing>0?`<div class="note" style="margin-bottom:12px">⚠ 문제 파일이 바뀌어 ${missing}문항은 표시되지 않습니다.</div>`:''}
-  <div class="card">
-    ${shown.length?shown.map((r,k)=>resultItemHtml(r.q,r.d,k,r.q.type||type,{label:(rows.indexOf(r)+1)+'.'})).join(''):'<div class="center muted">표시할 문항이 없습니다.</div>'}
-  </div>`;
-  window['wrongQs_'+i]=wrongQs;
-}
-
-// ===== 응시자 정보(이름·휴대폰 번호) 입력 + 결과 전송(구글 시트) =====
-// ★ 구글 Apps Script 웹 앱 URL 을 아래 따옴표 안에 붙여 넣으세요. (비워 두면 결과를 서버로 보내지 않고 이 기기에만 저장됩니다)
-const SHEET_URL = 'https://script.google.com/macros/s/AKfycbz5lGhfFnZLa68W-sbMvtd7I8e_wfjULpBv7wo7SPzDuQMM1Ki7fNKu1MwR3W8eXn_g/exec';
-// 개인정보 수집·이용 동의 문구 (운영 방식에 맞게 수정하세요)
-const PRIVACY = {
-  items:'이름, 휴대폰 번호, 응시 결과(시험명·점수·응시 일시)',
-  purpose:'모의고사 응시 현황 확인 및 성적 관리',
-  retention:'모의고사 운영 종료 후 지체 없이 파기'
-};
-const PROFILE_KEY='profile_traffic_v1', OUTBOX_KEY='outbox_traffic_v1';
-let PROFILE=null;
-try{ const pr=JSON.parse(localStorage.getItem(PROFILE_KEY)||'null'); if(pr&&pr.name&&pr.phone&&pr.agreed)PROFILE=pr; }catch(e){}
-
-function fmtPhone(d){ return d.length===11?d.slice(0,3)+'-'+d.slice(3,7)+'-'+d.slice(7):d.slice(0,3)+'-'+d.slice(3,6)+'-'+d.slice(6); }
-function validName(s){ s=String(s||'').trim(); return s.length>=2&&s.length<=20&&!/[\u0000-\u001f\u007f<>]/.test(s); }
-function validPhone(s){ return /^01[016789]\d{7,8}$/.test(String(s||'').replace(/\D/g,'')); }
-function updateSub(){
-  const el=document.getElementById('sub'); if(!el)return;
-  el.innerHTML='도로교통법규 기출문제 모음'+(PROFILE?` · ${esc(PROFILE.name)}님 <a href="#" style="color:#fff;text-decoration:underline" onclick="editProfile();return false">내 정보</a>`:'');
-}
-let profileEditing=false;
-function renderProfileForm(editing){
-  profileEditing=!!editing;
-  const p=PROFILE||{name:'',phone:''};
-  $('#view').innerHTML=`
-  <div class="card">
-    <h3>👤 ${editing?'내 정보 수정':'응시자 정보 입력'}</h3>
-    <p class="muted" style="margin:6px 0 14px">${editing?'정보를 수정하면 이후 응시 결과부터 적용됩니다.':'시험을 시작하려면 아래 정보를 입력해 주세요. 한 번 입력하면 이 기기에 기억됩니다.'}</p>
-    <div class="fld"><label>이름</label><input id="pf_name" maxlength="20" autocomplete="name" value="${attr(p.name)}" placeholder="홍길동"></div>
-    <div class="fld"><label>휴대폰 번호</label><input id="pf_phone" inputmode="numeric" maxlength="13" autocomplete="tel" value="${attr(p.phone?fmtPhone(String(p.phone).replace(/\D/g,'')):'')}" placeholder="010-1234-5678"></div>
-    <div class="note" style="margin:6px 0 12px;line-height:1.7">
-      <b>개인정보 수집·이용 안내</b><br>
-      · 수집 항목: ${esc(PRIVACY.items)}<br>
-      · 이용 목적: ${esc(PRIVACY.purpose)}<br>
-      · 보유 기간: ${esc(PRIVACY.retention)}<br>
-      · 동의를 거부할 수 있으나, 거부하면 시험에 응시할 수 없습니다.
-    </div>
-    <label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;margin-bottom:6px;cursor:pointer">
-      <input type="checkbox" id="pf_agree" style="width:auto;margin-top:3px" ${PROFILE&&PROFILE.agreed?'checked':''}> 위 내용을 확인하였으며 개인정보 수집·이용에 동의합니다.
-    </label>
-    <div id="pf_err" style="color:var(--no);font-size:12.5px;min-height:18px;margin-bottom:8px"></div>
-    <div class="row" style="gap:8px">
-      <button class="btn sec" style="flex:1" onclick="cancelProfile()">${editing?'취소':'돌아가기'}</button>
-      <button class="btn" style="flex:2" onclick="saveProfile()">${editing?'저장':'저장하고 시험 시작 ▶'}</button>
-    </div>
-  </div>`;
-  const ph=document.getElementById('pf_phone');
-  if(ph)ph.oninput=function(){const d=this.value.replace(/\D/g,'').slice(0,11);this.value=d.length<=3?d:d.length<=7?d.slice(0,3)+'-'+d.slice(3):d.slice(0,3)+'-'+d.slice(3,7)+'-'+d.slice(7);};
-}
-function saveProfile(){
-  const name=document.getElementById('pf_name').value.trim();
-  const phone=document.getElementById('pf_phone').value.replace(/\D/g,'');
-  const agree=document.getElementById('pf_agree').checked;
-  const err=m=>{document.getElementById('pf_err').textContent=m;};
-  if(!validName(name))return err('이름을 2~20자로 입력해 주세요.');
-  if(!validPhone(phone))return err('휴대폰 번호를 정확히 입력해 주세요. (예: 010-1234-5678)');
-  if(!agree)return err('개인정보 수집·이용에 동의해야 시험을 시작할 수 있습니다.');
-  PROFILE={name:name,phone:phone,agreed:true,at:new Date().toISOString()};
-  try{ localStorage.setItem(PROFILE_KEY,JSON.stringify(PROFILE)); }catch(e){ console.error('정보 저장 실패:',e); }
-  updateSub();
-  if(exam)exam.start=Date.now();   // 입력하는 데 걸린 시간은 소요 시간에서 제외
-  profileEditing=false;render();
-}
-function cancelProfile(){
-  profileEditing=false;
-  if(exam&&!PROFILE){exam=null;}   // 입력하지 않으면 시험은 시작되지 않는다
-  render();
-}
-function editProfile(){ renderProfileForm(true); }
-
-// 시험 이름 표기 (응시 현황에 표시됨)
-function examLabel(ex){
-  const c=CATS.find(x=>x.id===ex.cat),q=ex.qs[0]||{};let d='';
-  if(ex.cat==='4')d='제'+q.round+'회';
-  else if(ex.cat==='3')d=chapterFullLabel(q.chapter);
-  else if(ex.cat==='6')d=chapterTitleFmt(q.chapter);
-  else if(ex.cat==='5')d=[q.year,q.region].filter(Boolean).join(' ');
-  else d=ex.qs.length+'문항';
-  return ((c?c.name:'')+(d?' · '+d:'')+(ex.retry?' · 오답 다시풀기':'')).slice(0,100);
-}
-function newSid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,10); }
-
-// 전송 대기열: 전송에 실패하면 이 기기에 남겨 두었다가 다음 접속·연결 시 다시 보낸다(같은 sid 는 서버에서 중복 저장하지 않음)
-function loadOutbox(){ try{ return JSON.parse(localStorage.getItem(OUTBOX_KEY)||'[]')||[]; }catch(e){ return []; } }
-function saveOutbox(a){ try{ localStorage.setItem(OUTBOX_KEY,JSON.stringify(a)); }catch(e){ console.error(e); } }
-function enqueueResult(rec){
-  if(!SHEET_URL||!PROFILE)return;
-  const ob=loadOutbox();
-  ob.push({action:'submit',sid:rec.sid,name:PROFILE.name,phone:PROFILE.phone,cat:rec.cat,catName:(CATS.find(c=>c.id===rec.cat)||{}).name||'',
-    label:rec.label,score:rec.score,correct:rec.correct,total:rec.total,sec:rec.sec,takenAt:new Date().toISOString()});
-  saveOutbox(ob);flushOutbox();
-}
-let _flushing=false;
-async function flushOutbox(){
-  if(!SHEET_URL||_flushing)return;
-  _flushing=true;
-  try{
-    let ob=loadOutbox();
-    while(ob.length){
-      let j;
-      try{
-        // Content-Type 헤더를 지정하지 않아야(text/plain) 브라우저 사전 요청 없이 Apps Script 로 전송된다
-        const res=await fetch(SHEET_URL,{method:'POST',body:JSON.stringify(ob[0]),redirect:'follow'});
-        j=await res.json();
-      }catch(e){ break; }                       // 네트워크 문제: 남은 건 다음에 재시도
-      if(j&&(j.ok||j.permanent)){ ob=ob.slice(1);saveOutbox(ob); }   // 성공 또는 영구 오류(재시도해도 소용없는 건)는 대기열에서 제거
-      else break;
-    }
-  }finally{ _flushing=false;setSyncNote(); }
-}
-function setSyncNote(){
-  const el=document.getElementById('syncNote');
-  if(!el)return;
-  if(!SHEET_URL){el.style.display='none';return;}
-  el.style.display='';
-  const n=loadOutbox().length;
-  el.textContent=n?'⏳ 응시 결과 전송 대기 중입니다. 인터넷에 연결되면 자동으로 다시 전송됩니다.':'✅ 응시 결과가 전송되었습니다.';
-}
-window.addEventListener('online',()=>{flushOutbox();});
-updateSub();
-if(SHEET_URL)flushOutbox();
 
 function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function attr(s){return esc(s).replace(/"/g,'&quot;');}
@@ -882,10 +890,10 @@ function fmtExp(s){
 }
 // 모달 바깥(배경) 클릭으로는 닫히지 않음 - 반드시 X 또는 [닫기] 버튼을 눌러야 닫힘
 function applyQuestionFile(data){
-  let arr=[], vis={}, order=[];
+  let arr=[], vis={}, order=[], url='';
   if(Array.isArray(data)) arr=data;
-  else if(data && Array.isArray(data.questions)){ arr=data.questions; vis=data.catVis||{}; order=data.catOrder||[]; }
-  DB=arr; CAT_VIS=vis; CAT_ORDER=order;
+  else if(data && Array.isArray(data.questions)){ arr=data.questions; vis=data.catVis||{}; order=data.catOrder||[]; url=okScriptUrl(data.scriptUrl); }
+  DB=arr; CAT_VIS=vis; CAT_ORDER=order; SCRIPT_URL=url;
 }
 async function loadQuestions(){
   // 수험생용: 접속할 때마다 최신 문제 파일(traffic_question.json)을 불러온다.
@@ -915,6 +923,7 @@ async function loadQuestions(){
   }
   migrateDB();
   render();
+  flushPending();   // 전송하지 못했던 지난 응시 결과가 있으면 다시 보낸다
 }
 
 loadQuestions();
